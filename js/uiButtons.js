@@ -64,6 +64,45 @@ export function initUIButtons({
     app.cube.toggleBorders(checkBorders.checked);
   });
 
+  // Toggle build-box
+  const checkBuildBox = document.getElementById('toggle-box-frame');
+
+  checkBuildBox.addEventListener('change', () => {
+    app.build.toggleBuildBox(checkBuildBox.checked);
+  });
+
+  // Toggle a plane
+  const checkXyPlane = document.getElementById('toggle-xy');
+  checkXyPlane.addEventListener('change', () => {
+  const planeName = "xy";
+    app.cube.togglePlane(checkXyPlane.checked, planeName);
+  });
+  const checkZyPlane = document.getElementById('toggle-zy');
+  checkZyPlane.addEventListener('change', () => {
+  const planeName = "zy";
+    app.cube.togglePlane(checkZyPlane.checked, planeName);
+  });
+  const checkXzPlane = document.getElementById('toggle-xz');
+  checkXzPlane.addEventListener('change', () => {
+    const planeName = "xz";
+    app.cube.togglePlane(checkXzPlane.checked, planeName);
+  });
+  const checkAbPlane = document.getElementById('toggle-ab');
+  checkAbPlane.addEventListener('change', () => {
+    const planeName = "ab";
+    app.cube.togglePlane(checkAbPlane.checked, planeName);
+  });
+  const checkCbPlane = document.getElementById('toggle-cb');
+  checkCbPlane.addEventListener('change', () => {
+    const planeName = "cb";
+    app.cube.togglePlane(checkCbPlane.checked, planeName);
+  });
+  const checkAcPlane = document.getElementById('toggle-ac');
+  checkAcPlane.addEventListener('change', () => {
+    const planeName = "ac";
+    app.cube.togglePlane(checkAcPlane.checked, planeName);
+  });
+
   // Camera buttons
   const half = app.cube.halfPlane;
   const size = app.cube.pSize;

@@ -26,8 +26,18 @@ document.addEventListener('pointermove', onPointerMove, false);
 export function castRay() {
   // find intersections
   ray.setFromCamera(pointer, app.camera);
+
+  // Get all visible mesh descendants in the scene
+  const interactiveObjects = [];
+  app.scene.traverse((obj) => {
+    if (obj.isMesh && isObjectVisible(obj)) {
+      interactiveObjects.push(obj);
+    }
+  });
+
   // all scene children, recursive = false
-  const intersects = ray.intersectObjects(app.scene.children, true);
+  const intersects = ray.intersectObjects(interactiveObjects, true);
+  
   //console.log('Pointer:', pointer);
   if (intersects.length > 0) {
     //console.log('Intersections found:', intersects);
@@ -39,6 +49,14 @@ export function castRay() {
     raycast.point = null;
     raycast.object = null;
   }
+}
+
+function isObjectVisible(obj) {
+  while (obj) {
+    if (!obj.visible) return false;
+    obj = obj.parent;
+  }
+  return true;
 }
 
 // Checks if front of plane. Might use.

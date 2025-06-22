@@ -27,7 +27,7 @@ export class Build extends THREE.Group {
     const lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.8 });
     this.buildBox = new THREE.LineSegments(edges, lineMaterial);
     this.buildBox.position.set(this.size/2, this.size/2, this.size/2);
-    this.buildBox.renderOrder = 1;
+    this.buildBox.renderOrder = 98;
     this.buildBox.name = "build-box";
     this.add(this.buildBox);
 
@@ -209,6 +209,12 @@ export class Build extends THREE.Group {
     app.scene.add(mesh);
     this.objects.injects.push(mesh);
   }
+
+  // Toggle build-box frame
+  toggleBuildBox(visible) {
+    this.buildBox.visible = visible;
+  }
+
 }
 
 export default Build;

@@ -97,8 +97,9 @@ export class SuperCube extends THREE.Group {
     this.planes = {};
     this.grids = {};
     this.borders = {};
+    this.labels = {};
+
     this.colours = [];
-    this.labels = [];
 
     this.init();
   }
@@ -127,6 +128,7 @@ export class SuperCube extends THREE.Group {
     this.abPlane = new THREE.Mesh(this.planeGeometry, this.planeMaterial);
     this.cbPlane = new THREE.Mesh(this.planeGeometry, this.planeMaterial);
     this.acPlane = new THREE.Mesh(this.planeGeometry, this.planeMaterial);
+
 
     this.xyPlane.userData.isDrawPlane = true;
     this.zyPlane.userData.isDrawPlane = true;
@@ -171,6 +173,14 @@ export class SuperCube extends THREE.Group {
     this.cbBorder = this.createBorderStrip(this.colours.cb);
     this.acBorder = this.createBorderStrip(this.colours.ac);
 
+    // Inner plane borders
+    this.xyInnerBorder = this.createInnerBorder();
+    this.zyInnerBorder = this.createInnerBorder();
+    this.xzInnerBorder = this.createInnerBorder();
+    this.abInnerBorder = this.createInnerBorder();
+    this.cbInnerBorder = this.createInnerBorder();
+    this.acInnerBorder = this.createInnerBorder();
+
     this.outerPoints = [
       new THREE.Vector3(-this.halfCube+this.borderWidth, -this.halfCube-this.borderWidth, 0),
       new THREE.Vector3(this.halfCube+this.borderWidth, -this.halfCube-this.borderWidth, 0),
@@ -196,30 +206,30 @@ export class SuperCube extends THREE.Group {
     this.acGroup = new THREE.Group();
 
     // Add planes to groups
-    this.xyGroup.add(this.xyPlane, this.xyGrid, this.xyBorder, this.xyOutline);
-    this.zyGroup.add(this.zyPlane, this.zyGrid, this.zyBorder, this.zyOutline);
-    this.xzGroup.add(this.xzPlane, this.xzGrid, this.xzBorder, this.xzOutline);
-    this.abGroup.add(this.abPlane, this.abGrid, this.abBorder, this.abOutline);
-    this.cbGroup.add(this.cbPlane, this.cbGrid, this.cbBorder, this.cbOutline);
-    this.acGroup.add(this.acPlane, this.acGrid, this.acBorder, this.acOutline);
+    this.xyGroup.add(this.xyPlane, this.xyGrid, this.xyBorder, this.xyInnerBorder, this.xyOutline);
+    this.zyGroup.add(this.zyPlane, this.zyGrid, this.zyBorder, this.zyInnerBorder, this.zyOutline);
+    this.xzGroup.add(this.xzPlane, this.xzGrid, this.xzBorder, this.xzInnerBorder, this.xzOutline);
+    this.abGroup.add(this.abPlane, this.abGrid, this.abBorder, this.abInnerBorder, this.abOutline);
+    this.cbGroup.add(this.cbPlane, this.cbGrid, this.cbBorder, this.cbInnerBorder, this.cbOutline);
+    this.acGroup.add(this.acPlane, this.acGrid, this.acBorder, this.acInnerBorder, this.acOutline);
 
     // Add axis labels
-    this.xLabel = this.createAxisLabel('X', 0x000000, new THREE.Vector3(this.halfPlane, -this.labelOffset, -this.labelOffset));
-    this.yLabel = this.createAxisLabel('Y', 0x000000, new THREE.Vector3(-this.labelOffset, this.halfPlane, -this.labelOffset));
-    this.zLabel = this.createAxisLabel('Z', 0x000000, new THREE.Vector3(-this.labelOffset, -this.labelOffset, this.halfPlane));
+    this.xLabel = this.createAxisLabel('X', new THREE.Vector3(this.halfPlane, -this.labelOffset, -this.labelOffset));
+    this.yLabel = this.createAxisLabel('Y', new THREE.Vector3(-this.labelOffset, this.halfPlane, -this.labelOffset));
+    this.zLabel = this.createAxisLabel('Z', new THREE.Vector3(-this.labelOffset, -this.labelOffset, this.halfPlane));
     // Add labels for A, B, C planes
-    this.aLabel = this.createAxisLabel('A', 0x000000, new THREE.Vector3(this.halfPlane, this.pSize+this.labelOffset, this.pSize+this.labelOffset));
-    this.bLabel = this.createAxisLabel('B', 0x000000, new THREE.Vector3(this.pSize+this.labelOffset, this.halfPlane, this.pSize+this.labelOffset));
-    this.cLabel = this.createAxisLabel('C', 0x000000, new THREE.Vector3(this.pSize+this.labelOffset, this.pSize+this.labelOffset, this.halfPlane));
+    this.aLabel = this.createAxisLabel('A', new THREE.Vector3(this.halfPlane, this.pSize+this.labelOffset, this.pSize+this.labelOffset));
+    this.bLabel = this.createAxisLabel('B', new THREE.Vector3(this.pSize+this.labelOffset, this.halfPlane, this.pSize+this.labelOffset));
+    this.cLabel = this.createAxisLabel('C', new THREE.Vector3(this.pSize+this.labelOffset, this.pSize+this.labelOffset, this.halfPlane));
 
     // To search and loop through
     this.groupMap = {
-      xy: { group: this.xyGroup, plane: this.xyPlane, grid: this.xyGrid, border: this.xyBorder },
-      zy: { group: this.zyGroup, plane: this.zyPlane, grid: this.zyGrid, border: this.zyBorder },
-      xz: { group: this.xzGroup, plane: this.xzPlane, grid: this.xzGrid, border: this.xzBorder },
-      ab: { group: this.abGroup, plane: this.abPlane, grid: this.abGrid, border: this.abBorder },
-      cb: { group: this.cbGroup, plane: this.cbPlane, grid: this.cbGrid, border: this.cbBorder },
-      ac: { group: this.acGroup, plane: this.acPlane, grid: this.acGrid, border: this.acBorder },
+      xy: { group: this.xyGroup, plane: this.xyPlane, grid: this.xyGrid, border: this.xyBorder, innerBorder: this.xyBorder, outline: this.xyOutline },
+      zy: { group: this.zyGroup, plane: this.zyPlane, grid: this.zyGrid, border: this.zyBorder, innerBorder: this.zyBorder, outline: this.zyOutline },
+      xz: { group: this.xzGroup, plane: this.xzPlane, grid: this.xzGrid, border: this.xzBorder, innerBorder: this.xzBorder, outline: this.xzOutline },
+      ab: { group: this.abGroup, plane: this.abPlane, grid: this.abGrid, border: this.abBorder, innerBorder: this.abBorder, outline: this.abOutline },
+      cb: { group: this.cbGroup, plane: this.cbPlane, grid: this.cbGrid, border: this.cbBorder, innerBorder: this.cbBorder, outline: this.cbOutline },
+      ac: { group: this.acGroup, plane: this.acPlane, grid: this.acGrid, border: this.acBorder, innerBorder: this.acBorder, outline: this.acOutline },
     };
 
     this.groups = Object.values(this.groupMap).map(face => face.group);
@@ -227,24 +237,50 @@ export class SuperCube extends THREE.Group {
     this.grids = Object.values(this.groupMap).map(face => face.grid);
     this.borders = Object.values(this.groupMap).map(face => face.border);
 
+
     this.positionGroups();
   
     // Axis labels
-    this.labels = [
-      this.xLabel,
-      this.yLabel,
-      this.zLabel,
-      this.aLabel,
-      this.bLabel,
-      this.cLabel
-    ]
 
-    // Add groups and label explicitly
+    this.labels = {
+      x: { label: this.xLabel },
+      y: { label: this.yLabel },
+      z: { label: this.zLabel },
+      a: { label: this.aLabel },
+      b: { label: this.bLabel },
+      c: { label: this.cLabel }
+    }
+
+    // Set render orders
+    for (const key in this.groupMap) {
+      const { plane } = this.groupMap[key];
+      const { grid } = this.groupMap[key];
+      const { border } = this.groupMap[key];
+      const { innerBorder } = this.groupMap[key];
+      const { outline } = this.groupMap[key];
+
+      //const { label } = this.labels[key];
+      plane.renderOrder = 2;
+      grid.renderOrder = 3;
+      border.renderOrder = 3;
+      innerBorder.renderOrder = 3;
+      outline.renderOrder = 3;
+    }
+    // set render order from labels
+    for (const key in this.labels) {
+      const { label } = this.labels[key];
+      label.renderOrder = 99;
+    }
+    // Add groups to cube
     for (const key in this.groupMap) {
       const { group } = this.groupMap[key];
       this.add(group);
     }
-    this.labels.forEach(label => this.add(label));
+    // Add labels to cube
+    for (const key in this.labels) {
+      const { label } = this.labels[key];
+      this.add(label);
+    }
   }
 
   updateGapScale(newGapScale) {
@@ -278,9 +314,11 @@ export class SuperCube extends THREE.Group {
   // Axis label scaling
   scaleLabels(zoom) {
     this.labelScale = this.labelSize / zoom;
-    this.labels.forEach(label => {
+
+    for (const key in this.labels) {
+      const { label } = this.labels[key];
       label.scale.set(this.labelScale, this.labelScale, this.labelScale);
-    });
+    }
   }
 
   // Incase option to change plane colours
@@ -293,7 +331,8 @@ export class SuperCube extends THREE.Group {
     polygonOffset: true,
     polygonOffsetFactor: 1,
     polygonOffsetUnits: 1,
-    depthWrite: false,
+    depthWrite: true,   // important! writes to depth buffer
+    depthTest: true,
     blending: THREE.NormalBlending
     });
   }
@@ -327,7 +366,6 @@ export class SuperCube extends THREE.Group {
 
   createBorderStrip(colour) {
     // Outer frame: covers full plane + border on all sides
-
     const outer = new THREE.Shape();
     outer.moveTo(-this.halfOuter, -this.halfOuter);
     outer.lineTo(this.halfOuter, -this.halfOuter);
@@ -361,33 +399,97 @@ export class SuperCube extends THREE.Group {
     return new THREE.Mesh(geometry, material);
   }
 
+  createInnerBorder() {
+    const outs = this.halfPlane + this.borderGap + this.borderWidth;
+    const ins = this.halfPlane;
+
+    // Outer frame: covers full plane + border on all sides
+    const outer = new THREE.Shape();
+    outer.moveTo(-outs, -outs);
+    outer.lineTo(outs, -outs);
+    outer.lineTo(outs, outs);
+    outer.lineTo(-outs, outs);
+    outer.lineTo(-outs, -outs);
+
+    // Inner hole: matches exact plane dimensions
+    const inner = new THREE.Path();
+    inner.moveTo(-ins, -ins);
+    inner.lineTo(-ins, ins);
+    inner.lineTo(ins, ins);
+    inner.lineTo(ins, -ins);
+    inner.lineTo(-ins, -ins);
+
+    outer.holes.push(inner);
+
+    const geometry = new THREE.ShapeGeometry(outer);
+    // translate local origin to match planes
+    geometry.translate(this.pSize/2, this.pSize/2, 0);
+    // Transparent: false, opacity: 0.4, depthWrite: false
+    // Looks awesome.
+    const material = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0,
+      polygonOffset: true,
+      polygonOffsetFactor: 1,
+      polygonOffsetUnits: 1,
+      depthTest: true,
+      depthWrite: true,
+      blending: THREE.NormalBlending
+    });
+    return new THREE.Mesh(geometry, material);
+  }
+
   createOutline() {
     const outlineGeometry = new THREE.BufferGeometry().setFromPoints(this.outerPoints);
     // Translate local origin to match planes.
     outlineGeometry.translate(this.pSize/2, this.pSize/2, 0);
-    const outlineMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+    const outlineMaterial = new THREE.LineBasicMaterial({
+      color: 0x000000,
+      transparent: true,
+      opacity: 1,
+      depthTest: true,
+      depthWrite: true
+    });
     return new THREE.LineLoop(outlineGeometry, outlineMaterial);
   }
 
   // Create Axis labels
-  createAxisLabel(text, color, position) {
+  createAxisLabel(text, position) {
     const canvas = document.createElement('canvas');
     canvas.style.backgroundColor = 'transparent';
     canvas.width = 128;
     canvas.height = 128;
     const ctx = canvas.getContext('2d');
+
+    // Clear fully with alpha = 0
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     ctx.font = 'bold 80px Arial';
-    ctx.fillStyle = color;
+    ctx.fillStyle = "rgb(120, 120, 120)";
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(text, 64, 64);
 
     const texture = new THREE.CanvasTexture(canvas);
-    const material = new THREE.SpriteMaterial({ map: texture, transparent: true, opacity: 0.4 });
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    texture.format = THREE.RGBAFormat;
+    texture.premultiplyAlpha = false; // Important
+    texture.needsUpdate = true;
+
+    const material = new THREE.SpriteMaterial({ 
+      map: texture,
+      transparent: true,
+      opacity: 1,
+      depthTest: true,
+      depthWrite: false
+    });
+
     const sprite = new THREE.Sprite(material);
     sprite.scale.set(this.labelSize, this.labelSize, 1); // Adjust size as needed
     sprite.position.copy(position);
-    sprite.renderOrder = 1;
     return sprite;
   }
 
@@ -433,6 +535,12 @@ export class SuperCube extends THREE.Group {
     for (const { group } of Object.values(this.groupMap)) {
       group.visible = visible;
     }
+  }
+
+  // Toggle a plane
+  togglePlane(visible, key) {
+    const group = this.groupMap[key]?.group;
+    if (group) group.visible = visible;
   }
 
   // Toggle grids by visibility
