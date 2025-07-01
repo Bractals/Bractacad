@@ -51,7 +51,6 @@ export function castRay() {
       intersection = intersects[0];
       raycast.point = intersection.point;
       raycast.object = intersection.object;
-      console.log("raycast: " + raycast.object.name);
     }
   } else {
     raycast.point = null;
