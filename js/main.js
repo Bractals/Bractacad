@@ -62,10 +62,15 @@ function init () {
   scene.background = background;
 
   renderer = createRenderer();
+
+  // centtr to draw plane.
+
   // Set camera position and orientation;
   // Center of cube 
   center = new THREE.Vector3(cube.halfPlane, cube.halfPlane, -cube.halfPlane);
   defaultOrbit = new THREE.Vector3(-cube.pSize-cube.gap, cube.pSize*2+cube.gap, cube.pSize+cube.gap);
+
+  // make cube size based on the two furtherest vertexes in the object across all layers.
 
   cameraZoom = 3.4 / cube.pSize;
   cameraFar = cube.pSize*4 + cube.gap*4 + 500;
