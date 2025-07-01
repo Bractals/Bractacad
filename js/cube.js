@@ -38,8 +38,6 @@ export class SuperCube extends THREE.Group {
     // Axis labels
     this.labelSize = 0.4;
     this.labelOffset = this.gap + this.borderWidth + this.borderGap + (this.pSize*0.1);
-    // Inner build box
-    this.buildBox = null;
 
     this.planeGeometry = null;
     this.planeMaterial = null;
@@ -205,7 +203,7 @@ export class SuperCube extends THREE.Group {
     this.cbGroup = new THREE.Group();
     this.acGroup = new THREE.Group();
 
-    // Add planes to groups
+    // fill groups
     this.xyGroup.add(this.xyPlane, this.xyGrid, this.xyBorder, this.xyInnerBorder, this.xyOutline);
     this.zyGroup.add(this.zyPlane, this.zyGrid, this.zyBorder, this.zyInnerBorder, this.zyOutline);
     this.xzGroup.add(this.xzPlane, this.xzGrid, this.xzBorder, this.xzInnerBorder, this.xzOutline);
@@ -243,12 +241,12 @@ export class SuperCube extends THREE.Group {
     // Axis labels
 
     this.labels = {
-      x: { label: this.xLabel },
-      y: { label: this.yLabel },
-      z: { label: this.zLabel },
-      a: { label: this.aLabel },
-      b: { label: this.bLabel },
-      c: { label: this.cLabel }
+      x: this.xLabel ,
+      y: this.yLabel,
+      z: this.zLabel,
+      a: this.aLabel,
+      b: this.bLabel,
+      c: this.cLabel
     }
 
     // Set render orders
@@ -268,8 +266,7 @@ export class SuperCube extends THREE.Group {
     }
     // set render order from labels
     for (const key in this.labels) {
-      const { label } = this.labels[key];
-      label.renderOrder = 99;
+      this.labels[key].renderOrder = 99;
     }
     // Add groups to cube
     for (const key in this.groupMap) {
@@ -278,8 +275,7 @@ export class SuperCube extends THREE.Group {
     }
     // Add labels to cube
     for (const key in this.labels) {
-      const { label } = this.labels[key];
-      this.add(label);
+      this.add(this.labels[key]);
     }
   }
 
@@ -306,9 +302,12 @@ export class SuperCube extends THREE.Group {
     }
   }
 
-  scaleGuides(renderer, camera) {
-    this.scaleLabels(camera.zoom);
+  scaleGrids(renderer, camera) {
     this.updateGridSpacing(renderer, camera);
+  }
+
+  scaleLabels(camera) {
+    this.scaleLabels(camera.zoom);
   }
 
   // Axis label scaling
@@ -316,8 +315,7 @@ export class SuperCube extends THREE.Group {
     this.labelScale = this.labelSize / zoom;
 
     for (const key in this.labels) {
-      const { label } = this.labels[key];
-      label.scale.set(this.labelScale, this.labelScale, this.labelScale);
+      this.labels[key].scale.set(this.labelScale, this.labelScale, this.labelScale);
     }
   }
 
@@ -554,6 +552,13 @@ export class SuperCube extends THREE.Group {
   toggleBorders(visible) {
     for (const { border } of Object.values(this.groupMap)) {
       border.visible = visible;
+    }
+  }
+
+  // Toggle labels by visibility
+  toggleLabels(visible) {
+    for (const key in this.labels) {
+      this.labels[key].visible = visible;
     }
   }
   

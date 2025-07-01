@@ -11,8 +11,6 @@ export class Build extends THREE.Group {
     // Size of the build box for projecting the 3D objects
     this.size = planeSize;
 
-    this.buildBox = null;
-
     this.sketches = { lines: [] };
     this.object = { faces: [] };
     this.objects = [];
@@ -22,20 +20,7 @@ export class Build extends THREE.Group {
   }
 
   init() {
-    // Inner box guide
-    const boxA = new THREE.BoxGeometry(this.size, this.size, this.size);
-    const edges = new THREE.EdgesGeometry(boxA); // extracts edges
-    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.8 });
-    this.buildBox = new THREE.LineSegments(edges, lineMaterial);
-    this.buildBox.position.set(this.size/2, this.size/2, this.size/2);
-    this.buildBox.renderOrder = 98;
-    this.buildBox.name = "build-box";
-    this.add(this.buildBox);
 
-    // Need to store each connected lines as a sketch
-    // Need the plane of each sketch
-    // Project them to 3D
-    // Store 3D objects in array.
     // Maintain order for undo/redo history
   }
 
@@ -207,11 +192,6 @@ export class Build extends THREE.Group {
     this.tempObject = mesh;
 
     app.scene.add(mesh);
-  }
-
-  // Toggle build-box frame
-  toggleBuildBox(visible) {
-    this.buildBox.visible = visible;
   }
 
 }

@@ -8,6 +8,8 @@ import createControls from './controls.js';
 import cube from './cube.js';
 import raycast, { castRay } from './raycast.js';
 
+import axes from './Axes.js';
+
 import { runStartupAnimation } from './startupAnimation.js';
 
 // Utility
@@ -38,14 +40,6 @@ const canvas = document.querySelector('#background');
 // Camera settings
 let cameraZoom, cameraFar, frustrumSize;
 
-// Cube settings
-// input number button for cube gap with max and min.
-
-// origin axeshelper
-// const origin = new THREE.AxesHelper(cube.pSize);
-// origin.position.set(0,0,0);
-// scene.add(origin);
-
 // Run startup animation, then start main app
 //runStartupAnimation(renderer, main);
 
@@ -67,7 +61,7 @@ function init () {
 
   // Set camera position and orientation;
   // Center of cube 
-  center = new THREE.Vector3(cube.halfPlane, cube.halfPlane, -cube.halfPlane);
+  center = new THREE.Vector3(0, 0, 0);
   defaultOrbit = new THREE.Vector3(-cube.pSize-cube.gap, cube.pSize*2+cube.gap, cube.pSize+cube.gap);
 
   // make cube size based on the two furtherest vertexes in the object across all layers.
@@ -91,7 +85,7 @@ function init () {
   
   // tools
   toolManager = new ToolManager();
-  lineToolInstance = new LineTool(scene, raycast, cube, build);
+  //lineToolInstance = new LineTool(scene, raycast, cube, build);
   rectangleToolInstance = new RectangleTool(scene, raycast, cube, build);
 
   // Inject into appContext
@@ -122,9 +116,13 @@ function init () {
   });
 
   // Add the CAD cube to scene
-  app.scene.add(app.cube);
+  //app.scene.add(app.cube);
+
   // Add the build box
   app.scene.add(app.build);
+
+  // add axes to start
+  app.scene.add(axes);
 
   // Add lights for 3d object
   // Ambient light for base visibility
@@ -146,8 +144,11 @@ function init () {
 }
 
 function animate () {
-  // Update label and grid scale
-  app.cube.scaleGuides(app.renderer, app.camera);
+  // Update grid scale
+  app.cube.scaleGrids(app.renderer, app.camera);
+
+  // Update label scale
+  app.cube.scaleLabels(app.camera);
 
   // from raycast.js
   castRay();

@@ -33,14 +33,6 @@ export function castRay() {
 
   planes = app.cube.planes;
 
-  // Get all visible mesh descendants in the scene
-  // const interactiveObjects = [];
-  // app.scene.traverse((obj) => {
-  //   if (isPlane(obj) && isObjectVisible(obj)) {
-  //     interactiveObjects.push(obj);
-  //   }
-  // });
-
   // all scene children, recursive = false
   const intersects = ray.intersectObjects(app.scene.children, true);
   
@@ -64,37 +56,6 @@ function isObjectVisible(obj) {
     obj = obj.parent;
   }
   return true;
-}
-
-// check if object is a plane
-function isPlane(object){
-  return Object.values(planes).includes(object);
-}
-
-// Checks if front of plane. Might use.
-function frontOfPlane(object) {
-  // Dot product between face normal and ray direction
-  // If < 0 → hit the front side
-  if (intersection !== null) {
-    const front = intersection.face.normal.clone().applyMatrix3(
-      new THREE.Matrix3().getNormalMatrix(object.matrixWorld)
-    ).normalize();
-
-    const dot = front.dot(ray.ray.direction);
-
-    if (dot < 0) {
-      // Ray hit the front face
-      //console.log('Front hit:', object.name);
-      // console.log(planeHit);
-      return object;
-    } else {
-      // Ray hit the back face
-      //console.log('Back hit:', object.name);
-      return null;
-    }
-  } else {
-    console.log("intersection: " + intersection.object)
-  }
 }
 
 export default raycast;
