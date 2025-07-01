@@ -14,7 +14,7 @@ export default function createControls(camera, renderer) {
 
   // Remap mouse buttons
   controls.mouseButtons = {
-    LEFT: THREE.MOUSE.PAN,
+    LEFT: null,
     MIDDLE: THREE.MOUSE.DOLLY,
     RIGHT: THREE.MOUSE.ROTATE
   };

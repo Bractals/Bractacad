@@ -14,8 +14,9 @@ export class Build extends THREE.Group {
     this.buildBox = null;
 
     this.sketches = { lines: [] };
-    this.objects = { injects: [] };
-    this.projections = {};
+    this.object = { faces: [] };
+    this.objects = [];
+
 
     this.init();
   }
@@ -37,18 +38,29 @@ export class Build extends THREE.Group {
     // Store 3D objects in array.
     // Maintain order for undo/redo history
   }
+
+  updateSketch(sketch, plane) {
+    plane.add(sketch);
+
+    // project sketch to 3D and add to scene
+    this.extrude(sketch);
+  }
+
     // sketch object storing the plane the line array is on, uuid, and array of line objects
   addSketch(sketch, plane) {
     plane.add(sketch);
-    this.sketches.lines.push({ sketch, plane });
-    // To access the sketch objects
-    // const lineId = line.uuid;
-    //console.log(sketch);
-    // printing last line objects plane
-    // console.log(this.lines[this.lines.length-1].plane);
-    
     // project sketch to 3D and add to scene
     this.extrude(sketch);
+
+    this.sketches.lines.push({ sketch });
+
+    this.object.faces.push({ sketch });
+
+    this.objects.push({ sketch });
+
+    // prints last line objects plane
+    // console.log(this.lines[this.lines.length-1].plane);
+    
   }
 
   clearSketch() {
@@ -59,20 +71,6 @@ export class Build extends THREE.Group {
     });
     this.lines = [];
   }
-
-  // Tie sketches together and project to all planes.
-  // this.projections = {
-  //   mirrors: [],
-
-  //   // Need to map of each plane
-  //   // check which plane the sketch is
-  //   // and project to the rest.
-  //   updatePlanes() {
-  //     for (const sketch of this.sketches) {
-        
-  //     }
-  //   }
-  // }
 
   extrude(sketch) {
     const geometry = sketch.geometry;
@@ -206,8 +204,9 @@ export class Build extends THREE.Group {
     const edgeLines = new THREE.LineSegments(edges, lineMaterial);
     mesh.add(edgeLines); // add as child to move/scale with mesh
 
+    this.tempObject = mesh;
+
     app.scene.add(mesh);
-    this.objects.injects.push(mesh);
   }
 
   // Toggle build-box frame

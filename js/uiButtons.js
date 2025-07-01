@@ -4,8 +4,7 @@ import { app } from './app.js';
 export function initUIButtons({
   toolManager,
   lineToolInstance,
-  rectangleToolInstance,
-  cube
+  rectangleToolInstance
 }) {
   const lineBtn = document.getElementById('line-btn');
   const rectBtn = document.getElementById('rectangle-btn');
@@ -39,34 +38,24 @@ export function initUIButtons({
 
   // Toggle all planes
   const checkPlanes = document.getElementById('toggle-all-planes');
-
   checkPlanes.addEventListener('change', () => {
     app.cube.toggleAllPlanes(checkPlanes.checked);
   });
 
-  // Toggle plane
-  //const planeName = this.planes[i].name;
-  //const toggle = "toggle-" + planeName;
-  
-  //const plane = document.getElementById(toggle);
-
   // Toggle grids
   const checkGrids = document.getElementById('toggle-grids');
-
   checkGrids.addEventListener('change', () => {
     app.cube.toggleGrids(checkGrids.checked);
   });
 
   // Toggle borders
   const checkBorders = document.getElementById('toggle-borders');
-
   checkBorders.addEventListener('change', () => {
     app.cube.toggleBorders(checkBorders.checked);
   });
 
   // Toggle build-box
   const checkBuildBox = document.getElementById('toggle-box-frame');
-
   checkBuildBox.addEventListener('change', () => {
     app.build.toggleBuildBox(checkBuildBox.checked);
   });
@@ -106,7 +95,6 @@ export function initUIButtons({
   // Camera buttons
   const half = app.cube.halfPlane;
   const size = app.cube.pSize;
-  const gap = app.cube.gap;
 
   const camButtons = {
     'xyCamera-btn': new THREE.Vector3(half, half, size*2),
@@ -127,7 +115,8 @@ export function initUIButtons({
 
   // Reset camera
   document.getElementById('center-btn').addEventListener('click', () => {
-    app.camera.reset();
+    app.camera.setDefaultPos();
+    app.camera.setTargetCenter();
   });
 }
 

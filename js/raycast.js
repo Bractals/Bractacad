@@ -11,6 +11,10 @@ let raycast = {
   object: null
 };
 
+
+// map of plan objects
+let planes;
+
 let intersection;
 
 // Convert world point to local point
@@ -27,24 +31,28 @@ export function castRay() {
   // find intersections
   ray.setFromCamera(pointer, app.camera);
 
+  planes = app.cube.planes;
+
   // Get all visible mesh descendants in the scene
-  const interactiveObjects = [];
-  app.scene.traverse((obj) => {
-    if (obj.isMesh && isObjectVisible(obj)) {
-      interactiveObjects.push(obj);
-    }
-  });
+  // const interactiveObjects = [];
+  // app.scene.traverse((obj) => {
+  //   if (isPlane(obj) && isObjectVisible(obj)) {
+  //     interactiveObjects.push(obj);
+  //   }
+  // });
 
   // all scene children, recursive = false
-  const intersects = ray.intersectObjects(interactiveObjects, true);
+  const intersects = ray.intersectObjects(app.scene.children, true);
   
   //console.log('Pointer:', pointer);
   if (intersects.length > 0) {
-    //console.log('Intersections found:', intersects);
-    intersection = intersects[0];
-    raycast.object = intersection.object;
-    raycast.point = intersection.point;
-    //console.log("raycast x: " + raycast.point.z);
+
+    if (isObjectVisible(intersects[0].object)) {
+      intersection = intersects[0];
+      raycast.point = intersection.point;
+      raycast.object = intersection.object;
+      console.log("raycast: " + raycast.object.name);
+    }
   } else {
     raycast.point = null;
     raycast.object = null;
@@ -57,6 +65,11 @@ function isObjectVisible(obj) {
     obj = obj.parent;
   }
   return true;
+}
+
+// check if object is a plane
+function isPlane(object){
+  return Object.values(planes).includes(object);
 }
 
 // Checks if front of plane. Might use.

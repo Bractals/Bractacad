@@ -21,6 +21,8 @@ export default class LineTool extends DrawingTool {
     this.tempLine = null;
     this.points = [];
 
+    this.finishSketch = false;
+
     this.activePlane = raycast.plane;
   }
 
@@ -44,23 +46,22 @@ export default class LineTool extends DrawingTool {
   }
 
   draw() {
-    if (app.spaceDown) return;
 
     if (!this.enabled || !this.raycast.object) {
       // if clicked out of plane to cancel preview,
       // still finish what lines were drawn.
       if (this.activePlane) {
-        this.finalise();
+        this.finalise(this.finishSketch);
       }
       this.reset();
       return;
     }
 
+    // get hit object from raycast
     const intersected = this.raycast.object;
 
-    // if draw plane
+    // if object is not a draw plane
     if (!intersected.userData.isDrawPlane) {
-      this.finalise();
       this.reset();
       return;
     }
@@ -69,8 +70,10 @@ export default class LineTool extends DrawingTool {
 
     if (clickedPlane !== this.activePlane && this.isDrawing) {
       // If we clicked a different plane, finalise the current line
-      this.finalise();
+      this.finishSketch = true;
+      this.finalise(this.finishSketch);
       this.reset();
+      this.finishSketch = false;
       return;
     }
 
@@ -95,17 +98,23 @@ export default class LineTool extends DrawingTool {
       this.tempLine.geometry.dispose();
       this.tempLine.geometry = new THREE.BufferGeometry().setFromPoints(updatedPoints);
 
-      // Finalise if we have at least 2 points
+      // extrude in build.js if we have at least 2 points
       if (this.points.length > 1) {
         this.tempLine.geometry.setDrawRange(0, this.points.length);
+        this.finishSketch = true;
+        this.finalise();
+        this.finishSketch = false;
       }
-      this.finalise();
 
-      if (localPoint.equals(this.points[0])) {
-        // If we clicked the first point again, close the line
+      if (this.points[0].distanceTo(this.points[this.points.length - 1]) < 1e-5) {
         this.reset();
+        console.log("reset drawing");
       }
     }
+  }
+
+  addLine() {
+    this.build.addSketch(finalLine, this.activePlane, this.finishSketch);
   }
 
   // Call this manually to end drawing and store the final line
@@ -113,13 +122,13 @@ export default class LineTool extends DrawingTool {
     if (this.tempLine && this.points.length > 1) {
       const finalGeometry = new THREE.BufferGeometry().setFromPoints(this.points);
       const finalLine = new THREE.Line(finalGeometry, this.lineMaterial.clone());
-      this.build.addSketch(finalLine, this.activePlane);
+      this.build.addSketch(finalLine, this.activePlane, this.finishSketch);
     }
   }
 
   reset() {
     this.isDrawing = false;
-    this.points = [];
+    this.points = [];                                                   
 
     if (this.tempLine && this.activePlane) {
       this.activePlane.remove(this.tempLine);

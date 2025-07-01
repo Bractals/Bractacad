@@ -35,8 +35,11 @@ export default class Camera extends THREE.OrthographicCamera {
     this.refresh();
   }
 
-  reset() {
+  setDefaultPos() {
     this.setPos(this.defaultOrbit);
+  }
+
+  setTargetCenter() {
     this.setTarget(this.center);
   }
 

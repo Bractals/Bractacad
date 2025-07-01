@@ -67,7 +67,7 @@ function init () {
   center = new THREE.Vector3(cube.halfPlane, cube.halfPlane, -cube.halfPlane);
   defaultOrbit = new THREE.Vector3(-cube.pSize-cube.gap, cube.pSize*2+cube.gap, cube.pSize+cube.gap);
 
-  cameraZoom = 4.4 / cube.pSize;
+  cameraZoom = 3.4 / cube.pSize;
   cameraFar = cube.pSize*4 + cube.gap*4 + 500;
 
   // camera
@@ -107,22 +107,13 @@ function init () {
   // Ready settings
   setupSettings();
 
-  // Make sure this runs before OrbitControls processes the event
-  app.renderer.domElement.addEventListener('pointerdown', (e) => {
-    if (e.pointerType === 'mouse' && e.button === 0) {
-      app.controls.mouseButtons.RIGHT = app.spaceDown ? THREE.MOUSE.PAN : THREE.MOUSE.ROTATE;
-    }
-  }, { capture: true }); // 'capture' ensures we run before OrbitControls
-
-
   // Set up listeners
-  initListeners(toolManager, controls, lineToolInstance);
+  initListeners(toolManager, lineToolInstance);
   // Set up UI logic
   initUIButtons({
     toolManager,
     lineToolInstance,
-    rectangleToolInstance,
-    cube
+    rectangleToolInstance
   });
 
   // Add the CAD cube to scene
