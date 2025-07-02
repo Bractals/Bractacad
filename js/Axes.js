@@ -6,97 +6,90 @@ import gridFragmentShader from '../shaders/grid.frag.glsl';
 import { cloneUniforms } from 'three/src/renderers/shaders/UniformsUtils.js';
 import { TechnicolorShader } from 'three/examples/jsm/Addons.js';
 
-// Axis planes
+// Axes
 export class Axes extends THREE.Group {
-  constructor() {
+  constructor(length) {
     super();
 
-    this.size = 1000;
-    this.half = this.size/2;
+    this.length = length;
 
-    this.planeGeometry = null;
-    this.planeMaterial = null;
+    this.xGroup = null;
+    this.yGroup = null;
+    this.zGroup = null;
 
-    this.xyGroup = null;
-    this.zyGroup = null;
-    this.xzGroup = null;
+    this.xAxis = null;
+    this.yAxis = null;
+    this.zAxis = null;
 
-    this.xyPlane = null;
-    this.zyPlane = null;
-    this.xzPlane = null;
-
-    this.outline = null;
-    this.xyOutline = null;
-    this.zyOutline = null;
-    this.xzOutline = null;
+    this.labelSize = this.length * 0.1;
 
     this.groups = {};
-    this.planes = {};
-    this.planeSet = {};
 
     this.init();
   }
 
   init() {
 
-    // Plane elements
-    this.planeGeometry = new THREE.PlaneGeometry(this.size, this.size);
+    // Materials per axis
+    const xMat = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    const yMat = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+    const zMat = new THREE.LineBasicMaterial({ color: 0x0000ff });
 
-    this.planeMaterial = this.createPlaneMaterial();
+    // Geometries per axis
+    const xGeo = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-this.length, 0, 0),
+      new THREE.Vector3(this.length, 0, 0)
+    ]);
 
-    // Create planes
-    this.xyPlane = new THREE.Mesh(this.planeGeometry, this.planeMaterial);
-    this.zyPlane = new THREE.Mesh(this.planeGeometry, this.planeMaterial);
-    this.xzPlane = new THREE.Mesh(this.planeGeometry, this.planeMaterial);
+    const yGeo = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(0, -this.length, 0),
+      new THREE.Vector3(0, this.length, 0)
+    ]);
+
+    const zGeo = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(0, 0, -this.length),
+      new THREE.Vector3(0, 0, this.length)
+    ]);
+
+    // Line objects
+    this.xAxis = new THREE.LineSegments(xGeo, xMat);
+    this.yAxis = new THREE.LineSegments(yGeo, yMat);
+    this.zAxis = new THREE.LineSegments(zGeo, zMat);
 
     // Set plane names
-    this.xyPlane.name = 'XY';
-    this.zyPlane.name = 'ZY';
-    this.xzPlane.name = 'XZ';
+    this.xAxis.name = 'X';
+    this.yAxis.name = 'Y';
+    this.zAxis.name = 'Z';
+
+    const offset = this.length + this.labelSize * 0.5;
 
     // plane labels
-    this.xyLabel = this.addPlaneLabel(this.xyPlane.name);
-    this.zyLabel = this.addPlaneLabel(this.zyPlane.name);
-    this.xzLabel = this.addPlaneLabel(this.xzPlane.name);
-
-    // Plane edges
-    this.xyOutline = this.createOutline();
-    this.zyOutline = this.createOutline();
-    this.xzOutline = this.createOutline();
+    this.xLabel = this.createLabel(this.xAxis.name, new THREE.Vector3(offset, 0, 0));
+    this.yLabel = this.createLabel(this.yAxis.name, new THREE.Vector3(0, offset, 0));
+    this.zLabel = this.createLabel(this.zAxis.name, new THREE.Vector3(0, 0, offset));
 
     // create groups
-    this.xyGroup = new THREE.Group();
-    this.zyGroup = new THREE.Group();
-    this.xzGroup = new THREE.Group();
+    this.xGroup = new THREE.Group();
+    this.yGroup = new THREE.Group();
+    this.zGroup = new THREE.Group();
 
     // fill groups
-    this.xyGroup.add(this.xyPlane, this.xyLabel, this.xyOutline);
-    this.zyGroup.add(this.zyPlane, this.zyLabel, this.zyOutline);
-    this.xzGroup.add(this.xzPlane, this.xzLabel, this.xzOutline);
+    this.xGroup.add(this.xAxis, this.xLabel);
+    this.yGroup.add(this.yAxis, this.yLabel);
+    this.zGroup.add(this.zAxis, this.zLabel);
 
     // To search and loop through
     this.groupMap = {
-      xy: { group: this.xyGroup, plane: this.xyPlane, label: this.xyLabel, outline: this.xyOutline },
-      zy: { group: this.zyGroup, plane: this.zyPlane, label: this.zyLabel, outline: this.zyOutline },
-      xz: { group: this.xzGroup, plane: this.xzPlane, label: this.xzLabel, outline: this.xzOutline },
+      x: { group: this.xGroup, axis: this.xAxis, label: this.xLabel },
+      y: { group: this.yGroup, axis: this.yAxis, label: this.yLabel },
+      z: { group: this.zGroup, axis: this.zAxis, label: this.zLabel },
     }
 
     this.groups = Object.values(this.groupMap).map(face => face.group);
-    this.planes = Object.values(this.groupMap).map(face => face.plane);
-
-    this.groupSet = {
-      xy: { pos: [0, 0, 0], rot: [0, 0, 0] },
-      zy: { pos: [0, 0, 0], rot: [0, Math.PI/2, 0] },
-      xz: { pos: [0, 0, 0], rot: [Math.PI/2, 0, 0] },
-    }
+    this.axes = Object.values(this.groupMap).map(face => face.axis);
 
     for (const key in this.groupMap) {
       const { group } = this.groupMap[key]
-
-      // position axis planes
-      const { pos, rot } = this.groupSet[key];
-      group.position.set(...pos);
-      group.rotation.set(...rot);
     
       group.renderOrder = 1;
 
@@ -106,94 +99,48 @@ export class Axes extends THREE.Group {
 
   }
 
-  createPlaneMaterial() {
-    return new THREE.MeshBasicMaterial({
-    color: 0x008000,
-    side: THREE.DoubleSide,
-    transparent: true,
-    opacity: 0.1,
-    polygonOffset: true,
-    polygonOffsetFactor: 1,
-    polygonOffsetUnits: 1,
-    depthWrite: false,
-    depthTest: false,
-    blending: THREE.NormalBlending
-    });
-  }
-
-  createOutline() {
-
-    const points = [
-      new THREE.Vector3(-this.half, -this.half, 0),
-      new THREE.Vector3(-this.half, this.half, 0),
-      new THREE.Vector3(this.half, this.half, 0),
-      new THREE.Vector3(this.half, -this.half, 0),
-      new THREE.Vector3(-this.half, -this.half, 0),
-    ];
-
-    const outlineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-
-    const outlineMaterial = new THREE.LineBasicMaterial({
-      color: 0x008000,
-      depthTest: true,
-      depthWrite: true
-    });
-    return new THREE.LineLoop(outlineGeometry, outlineMaterial);
-  }
-
-  addPlaneLabel(label) {
-    // Pixel density (4 px per world unit)
-    const dpi = 4;
-    const fontSize = 140;
-
-    const canvasSize = this.size*0.2
-
+  // Create Axis labels
+  createLabel(text, position) {
     const canvas = document.createElement('canvas');
-    canvas.width = canvasSize * dpi;
-    canvas.height = canvasSize * dpi;
-
+    canvas.style.backgroundColor = 'transparent';
+    canvas.width = 128;
+    canvas.height = 128;
     const ctx = canvas.getContext('2d');
-    ctx.scale(dpi, dpi);
-    ctx.font = `bold ${fontSize}px Arial`;
-    ctx.fillStyle = '#008000';
-    ctx.textBaseline = 'top';
-    ctx.fillText(label, 10, 10);
+
+    // Clear fully with alpha = 0
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.font = 'bold 80px Arial';
+    ctx.fillStyle = "rgb(120, 120, 120)";
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, 64, 64);
 
     const texture = new THREE.CanvasTexture(canvas);
     texture.minFilter = THREE.LinearFilter;
-    texture.generateMipmaps = false;
+    texture.magFilter = THREE.LinearFilter;
+    texture.format = THREE.RGBAFormat;
+    texture.premultiplyAlpha = false; // Important
     texture.needsUpdate = true;
 
-    const material = new THREE.MeshBasicMaterial({ 
-      map: texture, 
-      color: 0x008000,
-      side: THREE.DoubleSide,
+    const material = new THREE.SpriteMaterial({ 
+      map: texture,
       transparent: true,
-      opacity: 0.5,
-      polygonOffset: true,
-      polygonOffsetFactor: 1,
-      polygonOffsetUnits: 1,
-      depthWrite: false,
-      depthTest: false,
-      blending: THREE.NormalBlending
+      opacity: 1,
+      depthTest: true,
+      depthWrite: false
     });
 
-    const scaleInWorldUnits = this.size * 0.15; // set visible size
-    const geometry = new THREE.PlaneGeometry(scaleInWorldUnits, scaleInWorldUnits);
-    const mesh = new THREE.Mesh(geometry, material);
+    const sprite = new THREE.Sprite(material);
+    sprite.scale.set(this.labelSize, this.labelSize, 1); // Adjust size as needed
+    sprite.position.copy(position);
+    
+    return sprite;
 
-    const pos = this.half*0.8;
-    mesh.position.set(-pos, pos, 0);
-
-    // Align the label to face in the direction of the plane's normal
-    const up = new THREE.Vector3(0, 0, 1);
-    const normal = new THREE.Vector3(0, 0, 1).normalize();
-    mesh.quaternion.setFromUnitVectors(up, normal);
-
-    return mesh;
   }
+
+
 
 }
 
-const axes = new Axes();
-export default axes;
+export default Axes;

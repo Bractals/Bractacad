@@ -243,15 +243,12 @@ ul li {
   height: 100%;
   overflow: visible;
 }
-.tab {
-  overflow: hidden;
-}
 #inspector .tab.collapsed .tab-content {
   display: none;
 }
 .tab-header {
-  height: 30px;
   display: flex;
+  height: 30px;
   align-content: center;
   justify-content: center;
   text-align: center;
@@ -265,7 +262,7 @@ ul li {
 }
 .toggle-tab-btn {
   display: flex;
-  width: 100%;
+  width: 100%; 
   height: 100%;
   align-items: center;
   justify-content: space-between;
@@ -277,14 +274,26 @@ ul li {
 }
 .tab-content {
   list-style: none;
+  border: none;
   margin: 0;
   padding: 0;
   cursor: default;
 }
 .tab-content li {
   display: flex;
-  padding: 8px 10px;
+  padding: 0;
+  width: 100%;
+  height: 100%;
   align-items: center;
+}
+.tab-content li > label{
+  flex: 1;
+  border: none;
+}
+.tab-content button {
+  padding: 0;
+  width: 100%;
+  height: 100%;
 }
 label {
   cursor: pointer;
@@ -297,16 +306,9 @@ input[type="checkbox"] {
   height: 15px;
   cursor: pointer;
 }
-#toggle-all-planes-label {
-  border: none;
-}
-#plane-toggles {
+.tab-content #plane-toggles {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  border-top: 1px dashed rgb(210, 210, 210);
-}
-#plane-toggles label {
-  border-right: 1px dashed rgb(210, 210, 210);
 }
 
 
@@ -332,7 +334,7 @@ input[type="checkbox"] {
   height: 12px;
   display: block;
 }
-.tool-btn {
+.tool-carousel button{
   flex: 0 0 auto;
   width: 28px;
   height: 28px;
@@ -370,6 +372,9 @@ input[type="checkbox"] {
   justify-content: space-between;
 
 }
+
+
+
 .modal {
   display: none; /* Hidden by default */
   position: fixed;

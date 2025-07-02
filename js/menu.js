@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Tab toggle for each section
+  // Tab toggle for each section 
   document.querySelectorAll('.toggle-tab-btn').forEach(button => {
     button.addEventListener('click', () => {
       const tab = button.closest('.tab');

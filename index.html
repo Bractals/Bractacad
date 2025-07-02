@@ -82,91 +82,102 @@
   <button id="toggle-inspector-btn" class="toggle-sidebar-btn" style="right: 149.3px;">&#x25B6;</button>
   <div id="inspector" class="menu">
     <div class="inspector-content">
-      <div class="tab" class="collapsed">
-      <div class="tab-header">
-        <button class="toggle-tab-btn">
-          <span class="arrow">‹</span>
-          <span class="tab-label">Toggle</span>
-        </button>
+      <div class="tab collapsed">
+        <div class="tab-header">
+          <button class="toggle-tab-btn">
+            <span class="arrow">‹</span>
+            <span class="tab-label">Toggle</span>
+          </button>
+        </div>
+
+        <ul class="tab-content">
+          <li>
+            <label id="toggle-all-planes-label">
+              <input type="checkbox" id="toggle-all-planes" checked>
+              <span>Planes</span>
+            </label>
+          </li>
+
+          <li id="plane-toggles">
+            <label>
+              <input type="checkbox" id="toggle-xy" checked>
+              <span>XY</span>
+            </label>
+            <label>
+              <input type="checkbox" id="toggle-ab" checked>
+              <span>AB</span>
+            </label>
+            <label>
+              <input type="checkbox" id="toggle-zy" checked>
+              <span>ZY</span>
+            </label>
+            <label>
+              <input type="checkbox" id="toggle-cb" checked>
+              <span>CB</span>
+            </label>
+            <label>
+              <input type="checkbox" id="toggle-xz" checked>
+              <span>XZ</span>
+            </label>
+            <label>
+              <input type="checkbox" id="toggle-ac" checked>
+              <span>AC</span>
+            </label>
+          </li>
+
+          <li>
+            <label id="toggle-grids-label">
+              <input type="checkbox" id="toggle-grids" checked>
+              <span>Grids</span>
+            </label>
+          </li>
+          <li>
+            <label id="toggle-borders-label">
+              <input type="checkbox" id="toggle-borders" checked>
+              <span>Borders</span>
+            </label>
+          </li>
+          <li>
+            <label id="toggle-labels-label">
+              <input type="checkbox" id="toggle-labels" checked>
+              <span>Labels</span>
+            </label>
+          </li>
+
+        </ul>
       </div>
-      <ul class="tab-content">
-        <label id="toggle-all-planes-label">
-          <input type="checkbox" id="toggle-all-planes" checked>
-          <span>Planes</span>
-        </label>
 
-        <div id="plane-toggles">
-          <label>
-            <input type="checkbox" id="toggle-xy" checked>
-            <span>XY</span>
-          </label>
-          <label>
-            <input type="checkbox" id="toggle-ab" checked>
-            <span>AB</span>
-          </label>
-          <label>
-            <input type="checkbox" id="toggle-zy" checked>
-            <span>ZY</span>
-          </label>
-          <label>
-            <input type="checkbox" id="toggle-cb" checked>
-            <span>CB</span>
-          </label>
-          <label>
-            <input type="checkbox" id="toggle-xz" checked>
-            <span>XZ</span>
-          </label>
-          <label>
-            <input type="checkbox" id="toggle-ac" checked>
-            <span>AC</span>
-          </label>
+      <div class="tab collapsed">
+        <div class="tab-header">
+          <button class="toggle-tab-btn">
+            <span class="arrow">‹</span>
+            <span class="tab-label">Tools</span>
+          </button>
         </div>
-
-        <label id="toggle-grids-label">
-          <input type="checkbox" id="toggle-grids" checked>
-          <span>Grids</span>
-        </label>
-
-        <label id="toggle-borders-label">
-          <input type="checkbox" id="toggle-borders" checked>
-          <span>Borders</span>
-        </label>
-
-        <label id="toggle-labels-label">
-          <input type="checkbox" id="toggle-labels" checked>
-          <span>Labels</span>
-        </label>
-
-      </ul>
-      <div class="tab" class="collapsed">
-          <div class="tab-header">
-            <button class="toggle-tab-btn">
-              <span class="arrow">‹</span>
-              <span class="tab-label">Tools</span>
-            </button>
+        <div class="tab-content">
+          <div class="tool-carousel">
+            <button class="tool-btn" id="line-btn">✏️</button>
+            <button class="tool-btn">📏</button>
+            <button class="tool-btn" id="rectangle-btn">🔲</button>
+            <button class="tool-btn">🔵</button>
           </div>
-          <ul class="tab-content">
-            <div class="tool-carousel">
-              <button class="tool-btn" id="line-btn">✏️</button>
-              <button class="tool-btn">📏</button>
-              <button class="tool-btn" id="rectangle-btn">🔲</button>
-              <button class="tool-btn">🔵</button>
-            </div> 
-          </ul>
         </div>
+      </div>
 
-        <div class="tab" class="collapsed">
-          <div class="tab-header">
-            <button class="toggle-tab-btn">
-              <span class="arrow">‹</span>
-              <span class="tab-label">Layers</span>
-            </button>
-          </div>
-          <ul class="tab-content">
-            <li><span>[icon]--</span>Layer 1</li>
-            <li><span>[icon]--</span>Layer 2</li>
-          </ul>
+      <div class="tab collapsed">
+        <div class="tab-header">
+          <button class="toggle-tab-btn">
+            <span class="arrow">‹</span>
+            <span class="tab-label">Layers</span>
+          </button>
         </div>
+        <ul class="tab-content">
+          <li><span>[icon]--</span>Layer 1</li>
+          <li><span>[icon]--</span>Layer 2</li>
+        </ul>
+      </div>
+
+
     </div>
 
 

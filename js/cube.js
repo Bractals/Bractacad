@@ -112,7 +112,7 @@ export class SuperCube extends THREE.Group {
     // Colours
     this.colours = {
       xy: 0xFF0000,  // Red
-      zy: 0xFFFF00,  // Yllow
+      zy: 0xFFFF00,  // Yellow
       xz: 0x0000FF,  // Blue
       ab: 0xFF5CFF,  // Pink
       cb: 0x008000,  // Green
