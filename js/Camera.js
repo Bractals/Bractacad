@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { app } from './app.js';
 
 export default class Camera extends THREE.OrthographicCamera {
   constructor(defaultOrbit, center, far) {
@@ -44,6 +45,7 @@ export default class Camera extends THREE.OrthographicCamera {
   }
 
   refresh() {
+    this.up.set(0, 1, 0);
     this.updateProjectionMatrix();
     this.updateMatrixWorld();
     if (this.controls) this.controls.update();

@@ -1,95 +1,139 @@
 import * as THREE from 'three';
 import { app } from './app.js';
 
-import gridVertexShader from '../shaders/grid.vert.glsl';
-import gridFragmentShader from '../shaders/grid.frag.glsl';
-import { cloneUniforms } from 'three/src/renderers/shaders/UniformsUtils.js';
-import { TechnicolorShader } from 'three/examples/jsm/Addons.js';
-
 // Axes
 export class Axes extends THREE.Group {
-  constructor(length) {
+  constructor(size) {
     super();
 
-    this.length = length;
+    this.size = size;
+    this.half = this.size/2;
 
-    this.xGroup = null;
-    this.yGroup = null;
-    this.zGroup = null;
+    this.planeGeometry = null;
+    this.planeMaterial = null;
 
-    this.xAxis = null;
-    this.yAxis = null;
-    this.zAxis = null;
+    this.xyGroup = null;
+    this.zyGroup = null;
+    this.xzGroup = null;
 
-    this.labelSize = this.length * 0.1;
+    this.xyPlane = null;
+    this.zyPlane = null;
+    this.xzPlane = null;
+
+    this.xyLabel = null;
+    this.xyLabel = null;
+    this.xyLabel = null;
+
+    this.axisLabelSize = this.size * 0.1;
+    this.labelScale = null;
+
+    this.xLabel = null;
+    this.yLabel = null;
+    this.zLabel = null;
+
+    this.outline = null;
+    this.xyOutline = null;
+    this.zyOutline = null;
+    this.xzOutline = null;
 
     this.groups = {};
+    this.planes = {};
+    this.planeSet = {};
+
+    this.colours = {};
 
     this.init();
   }
 
   init() {
 
-    // Materials per axis
-    const xMat = new THREE.LineBasicMaterial({ color: 0xff0000 });
-    const yMat = new THREE.LineBasicMaterial({ color: 0x00ff00 });
-    const zMat = new THREE.LineBasicMaterial({ color: 0x0000ff });
+    // Plane colours
+    this.colours = {
+      xy: 0xFF0000,
+      zy: 0xFFFF00,
+      xz: 0x0000FF, 
+    }
 
-    // Geometries per axis
-    const xGeo = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(-this.length, 0, 0),
-      new THREE.Vector3(this.length, 0, 0)
-    ]);
+    // Plane elements
+    this.planeGeometry = new THREE.PlaneGeometry(this.size, this.size);
+    this.planeMaterial = this.createPlaneMaterial();
 
-    const yGeo = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(0, -this.length, 0),
-      new THREE.Vector3(0, this.length, 0)
-    ]);
+    // Create planes
+    this.xyPlane = new THREE.Mesh(this.planeGeometry, this.planeMaterial.clone());
+    this.zyPlane = new THREE.Mesh(this.planeGeometry, this.planeMaterial.clone());
+    this.xzPlane = new THREE.Mesh(this.planeGeometry, this.planeMaterial.clone());
 
-    const zGeo = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(0, 0, -this.length),
-      new THREE.Vector3(0, 0, this.length)
-    ]);
-
-    // Line objects
-    this.xAxis = new THREE.LineSegments(xGeo, xMat);
-    this.yAxis = new THREE.LineSegments(yGeo, yMat);
-    this.zAxis = new THREE.LineSegments(zGeo, zMat);
+    this.xyPlane.userData.type = 'axisPlane';
+    this.zyPlane.userData.type = 'axisPlane';
+    this.xzPlane.userData.type = 'axisPlane';
 
     // Set plane names
-    this.xAxis.name = 'X';
-    this.yAxis.name = 'Y';
-    this.zAxis.name = 'Z';
-
-    const offset = this.length + this.labelSize * 0.5;
+    this.xyPlane.name = 'XY';
+    this.zyPlane.name = 'ZY';
+    this.xzPlane.name = 'XZ';
 
     // plane labels
-    this.xLabel = this.createLabel(this.xAxis.name, new THREE.Vector3(offset, 0, 0));
-    this.yLabel = this.createLabel(this.yAxis.name, new THREE.Vector3(0, offset, 0));
-    this.zLabel = this.createLabel(this.zAxis.name, new THREE.Vector3(0, 0, offset));
+    this.xyLabel = this.createPlaneLabel(this.xyPlane.name);
+    this.zyLabel = this.createPlaneLabel(this.zyPlane.name);
+    this.xzLabel = this.createPlaneLabel(this.xzPlane.name);
+
+    // Plane outlines
+    this.xyOutline = this.createOutline();
+    this.zyOutline = this.createOutline();
+    this.xzOutline = this.createOutline();
+
+    const fullOffset = this.size + this.axisLabelSize + this.size * 0.1;
+    const halfOffset = this.size/2 + this.axisLabelSize + this.size/2 * 0.1;
+
+    // Axis labels
+    this.xLabel = this.createAxisLabel('X', new THREE.Vector3(halfOffset, 0, 0));
+    this.yLabel = this.createAxisLabel('Y', new THREE.Vector3(0, fullOffset, 0));
+    this.zLabel = this.createAxisLabel('Z', new THREE.Vector3(0, 0, halfOffset));
+
+      
+    // Axis labels
+    this.labels = {
+      x: this.xLabel,
+      y: this.yLabel,
+      z: this.zLabel
+    }
+
+    // Add axis labels to object
+    this.add(this.xLabel, this.yLabel, this.zLabel);
 
     // create groups
-    this.xGroup = new THREE.Group();
-    this.yGroup = new THREE.Group();
-    this.zGroup = new THREE.Group();
+    this.xyGroup = new THREE.Group();
+    this.zyGroup = new THREE.Group();
+    this.xzGroup = new THREE.Group();
 
-    // fill groups
-    this.xGroup.add(this.xAxis, this.xLabel);
-    this.yGroup.add(this.yAxis, this.yLabel);
-    this.zGroup.add(this.zAxis, this.zLabel);
+    // Populate groups
+    this.xyGroup.add(this.xyPlane, this.xyLabel, this.xyOutline);
+    this.zyGroup.add(this.zyPlane, this.zyLabel, this.zyOutline);
+    this.xzGroup.add(this.xzPlane, this.xzLabel, this.xzOutline);
 
     // To search and loop through
     this.groupMap = {
-      x: { group: this.xGroup, axis: this.xAxis, label: this.xLabel },
-      y: { group: this.yGroup, axis: this.yAxis, label: this.yLabel },
-      z: { group: this.zGroup, axis: this.zAxis, label: this.zLabel },
+      xy: { group: this.xyGroup, plane: this.xyPlane, label: this.xyLabel, outline: this.xyOutline, axis: this.xLabel },
+      zy: { group: this.zyGroup, plane: this.zyPlane, label: this.zyLabel, outline: this.zyOutline, axis: this.yLabel },
+      xz: { group: this.xzGroup, plane: this.xzPlane, label: this.xzLabel, outline: this.xzOutline, axis: this.zLabel },
     }
 
     this.groups = Object.values(this.groupMap).map(face => face.group);
-    this.axes = Object.values(this.groupMap).map(face => face.axis);
+    this.planes = Object.values(this.groupMap).map(face => face.plane);
+
+    this.groupSet = {
+      xy: { pos: [0, this.size/2, 0], rot: [0, -Math.PI, 0] },
+      zy: { pos: [0, this.size/2, 0], rot: [0, -Math.PI/2, 0] },
+      xz: { pos: [0, 0, 0], rot: [Math.PI/2, 0, 0] },
+    }
 
     for (const key in this.groupMap) {
-      const { group } = this.groupMap[key]
+      const { group } = this.groupMap[key];
+
+      // position axis planes
+      const { pos, rot } = this.groupSet[key];
+      group.position.set(...pos);
+      group.rotation.set(...rot);
     
       group.renderOrder = 1;
 
@@ -99,8 +143,94 @@ export class Axes extends THREE.Group {
 
   }
 
-  // Create Axis labels
-  createLabel(text, position) {
+  createPlaneMaterial() {
+    return new THREE.MeshBasicMaterial({
+    color: 0x808080,
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: 0.1,
+    polygonOffset: true,
+    polygonOffsetFactor: 1,
+    polygonOffsetUnits: 1,
+    depthWrite: false,
+    depthTest: false,
+    blending: THREE.NormalBlending
+    });
+  }
+
+  createOutline() {
+    const points = [
+      new THREE.Vector3(-this.half, -this.half, 0),
+      new THREE.Vector3(-this.half, this.half, 0),
+      new THREE.Vector3(this.half, this.half, 0),
+      new THREE.Vector3(this.half, -this.half, 0),
+      new THREE.Vector3(-this.half, -this.half, 0),
+    ];
+
+    const outlineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+
+    const outlineMaterial = new THREE.LineBasicMaterial({
+      color: 0x000000,
+      depthTest: true,
+      depthWrite: true
+    });
+    return new THREE.LineLoop(outlineGeometry, outlineMaterial);
+  }
+
+  createPlaneLabel(label) {
+    // Pixel density (4 px per world unit)
+    const dpi = 4;
+    const fontSize = 140;
+
+    const canvasSize = this.size*0.2
+
+    const canvas = document.createElement('canvas');
+    canvas.width = canvasSize * dpi;
+    canvas.height = canvasSize * dpi;
+
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpi, dpi);
+    ctx.font = `bold ${fontSize}px Arial`;
+    ctx.fillStyle = '#000000';
+    ctx.textBaseline = 'top';
+    ctx.fillText(label, 10, 10);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.minFilter = THREE.LinearFilter;
+    texture.generateMipmaps = false;
+    texture.needsUpdate = true;
+
+    const material = new THREE.MeshBasicMaterial({ 
+      map: texture, 
+      color: 0x000000,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.6,
+      polygonOffset: true,
+      polygonOffsetFactor: 1,
+      polygonOffsetUnits: 1,
+      depthWrite: false,
+      depthTest: false,
+      blending: THREE.NormalBlending
+    });
+
+    const scaleInWorldUnits = this.size * 0.15; // set visible size
+    const geometry = new THREE.PlaneGeometry(scaleInWorldUnits, scaleInWorldUnits);
+    
+    const mesh = new THREE.Mesh(geometry, material);
+
+    const pos = this.half*0.8;
+    mesh.position.set(-pos, pos, 0);
+
+    // Align the label to face in the direction of the plane's normal
+    const up = new THREE.Vector3(0, 0, 1);
+    const normal = new THREE.Vector3(0, 0, 1).normalize();
+    mesh.quaternion.setFromUnitVectors(up, normal);
+
+    return mesh;
+  }
+
+  createAxisLabel(label, position) {
     const canvas = document.createElement('canvas');
     canvas.style.backgroundColor = 'transparent';
     canvas.width = 128;
@@ -114,7 +244,7 @@ export class Axes extends THREE.Group {
     ctx.fillStyle = "rgb(120, 120, 120)";
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(text, 64, 64);
+    ctx.fillText(label, 64, 64);
 
     const texture = new THREE.CanvasTexture(canvas);
     texture.minFilter = THREE.LinearFilter;
@@ -132,14 +262,20 @@ export class Axes extends THREE.Group {
     });
 
     const sprite = new THREE.Sprite(material);
-    sprite.scale.set(this.labelSize, this.labelSize, 1); // Adjust size as needed
+    sprite.scale.set(this.axisLabelSize, this.axisLabelSize, 1); // Adjust size as needed
     sprite.position.copy(position);
     
     return sprite;
-
   }
 
+  // Axis label scaling
+  scaleLabels(camera) {
+    this.labelScale = this.axisLabelSize / camera;
 
+    for (const key in this.labels) {
+      this.labels[key].scale.set(this.axisLabelSize, this.axisLabelSize, this.axisLabelSize);
+    }
+  }
 
 }
 

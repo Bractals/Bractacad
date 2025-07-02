@@ -8,7 +8,8 @@ const pointer = new THREE.Vector2();
 // Keep all state inside raycast.
 let raycast = {
   point: null,
-  object: null
+  object: null,
+  clicked: false
 };
 
 

@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 import { app } from './app.js';
 
-let isPanning = false;
-let spaceDown = false;
 
 export function initListeners(toolManager, lineTool) {
+
+  // Camera buttons
+  const size = app.state.size;
+  const half = app.state.size/2;
 
   // To stop drawing
   window.addEventListener('keydown', (e) => {
@@ -16,13 +18,15 @@ export function initListeners(toolManager, lineTool) {
   });
 
   window.addEventListener('pointermove', (e) => {
+    app.raycast.clicked = true;
     toolManager.onPointerMove(e);
   });
 
   // Start panning
   window.addEventListener('keydown', (e) => {
     if (e.code === 'Space') {
-      spaceDown = true;
+      app.input.spaceDown = true;
+      console.log(app.sceneLogic.spaceDown);
       app.controls.mouseButtons.LEFT = THREE.MOUSE.PAN;
     }
   });
@@ -30,36 +34,24 @@ export function initListeners(toolManager, lineTool) {
   // stop panning
   window.addEventListener('keyup', (e) => {
     if (e.code === 'Space') {
-      spaceDown = false;
+      app.input.spaceDown = false;
       app.controls.mouseButtons.LEFT = null;
     }
   });
 
-  // window.addEventListener('pointerdown', (e) => {
-  //   if (e.button === 0 && spaceDown) {
-  //     isPanning = true;
-  //     app.controls.mouseButtons.LEFT = THREE.MOUSE.PAN;
-  //   } else if (e.button === 0 && !spaceDown){
-  //     isPanning = false;
-  //   }
-  // });
-
   window.addEventListener('pointerdown', (e) => {
+    // ignore clicks inside menu  
+    if (e.target.closest('.menu')) return;
 
-    if (e.target.closest('.menu')) return; // ignore clicks inside menu
-
-    if (!spaceDown) {
+    if (!app.input.spaceDown) {
       toolManager.onPointerDown(e);
     }
+
   });
 
   window.addEventListener('pointerup', (e) => {
     toolManager.onPointerUp(e);
   });
-
-  // Camera buttons
-  const half = app.cube.halfPlane;
-  const size = app.cube.pSize;
 
   const planeCams = {
     xy: new THREE.Vector3(half, half, size*2),
@@ -70,17 +62,15 @@ export function initListeners(toolManager, lineTool) {
     ac: new THREE.Vector3(half, size*3, -half+0.0001)
   };
 
-  let hasPanned = false;
-
   // if panned, hasPanned = true.
   window.addEventListener('pointerdown', (e) => {
     // left click pan
-    if (e.button === 0 && spaceDown) {
-      hasPanned = true;
+    if (e.button === 0 && app.input.spaceDown) {
+      app.input.hasPanned = true;
       return;
     }
     // if orbiting after panning, re-center camera
-    else if (e.button === 2 && hasPanned) {
+    else if (e.button === 2 && app.input.hasPanned) {
 
       const key = closestPlane(app.camera.position);
       const pos = planeCams[key];
@@ -89,7 +79,7 @@ export function initListeners(toolManager, lineTool) {
       app.camera.setTargetCenter();
       app.camera.refresh();
 
-      hasPanned = false;
+      app.input.hasPanned = false;
       return;
     }
   });

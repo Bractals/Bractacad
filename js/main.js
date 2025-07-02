@@ -5,11 +5,12 @@ import createRenderer from './renderer.js';
 import scene from './scene.js';
 import Camera from './Camera.js';
 import createControls from './controls.js';
+import { addSceneLogic } from './sceneLogic.js';
+
 import cube from './cube.js';
 import raycast, { castRay } from './raycast.js';
 
 import Axes from './Axes.js';
-import axisPlanes from './AxisPlanes.js';
 
 import { runStartupAnimation } from './startupAnimation.js';
 
@@ -29,7 +30,6 @@ import { app } from './app.js';
 
 // 2d sketches and 3d objects
 import Build from './Build.js';
-
 
 
 let renderer, controls;
@@ -69,7 +69,7 @@ function init () {
   // Set camera position and orientation;
   // center at origin to start
   center = new THREE.Vector3(0, 0, 0);
-  defaultOrbit = new THREE.Vector3(-size, size, size);
+  defaultOrbit = new THREE.Vector3(-size, size, size-400);
 
   // make cube size based on the two furthest vertexes in the object across all layers.
 
@@ -103,9 +103,13 @@ function init () {
   app.scene = scene;
   app.camera = camera;
   app.controls = controls;
+
+
   app.raycast = raycast;
   app.cube = cube;
   app.build = build;
+
+  app.axes = axes;
 
   // update camera
   app.camera.refresh();
@@ -131,9 +135,6 @@ function init () {
   // Add axes
   app.scene.add(axes);
 
-  // add axes to start
-  app.scene.add(axisPlanes);
-
   // Add the build box
   app.scene.add(app.build);
 
@@ -157,10 +158,12 @@ function animate () {
   //app.cube.scaleGrids(app.renderer, app.camera);
 
   // Update label scale
-  //app.cube.scaleLabels(app.camera);
+  app.axes.scaleLabels(app.camera);
 
   // from raycast.js
   castRay();
+  // Set up scene logic
+  addSceneLogic(app, app.axes);
 
   app.controls.update();
   app.camera.updateProjectionMatrix();

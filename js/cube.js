@@ -239,7 +239,6 @@ export class SuperCube extends THREE.Group {
     this.positionGroups();
   
     // Axis labels
-
     this.labels = {
       x: this.xLabel ,
       y: this.yLabel,
