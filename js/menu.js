@@ -1,4 +1,4 @@
-import { app } from './app.js';
+import { app } from '../main.js';
 
 
 // document.querySelector('#menu button:contains("Import")')?.addEventListener('click', () => {

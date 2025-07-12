@@ -1,36 +1,39 @@
 import * as THREE from 'three';
 
 // Shared pieces
-import createRenderer from './renderer.js';
-import scene from './scene.js';
-import Camera from './Camera.js';
-import createControls from './controls.js';
-import { addSceneLogic } from './sceneLogic.js';
+import createRenderer from './js/singletons/renderer.js';
+import scene from './js/singletons/scene.js';
+import Camera from './js/singletons/Camera.js';
+import createControls from './js/singletons/controls.js';
+import { addSceneLogic } from './js/sceneLogic.js';
+import Plane from './js/singletons/Plane.js';
 
-import cube from './cube.js';
-import raycast, { castRay } from './raycast.js';
+import cube from './js/singletons/cube.js';
+import raycast, { castRay } from './js/raycast.js';
 
-import Axes from './Axes.js';
+import Axes from './js/singletons/Axes.js';
 
-import { runStartupAnimation } from './startupAnimation.js';
+//import { runStartupAnimation } from './startupAnimation.js';
 
 // Utility
-import { setupSettings } from './settings.js';
-import { addResizeListener} from './resize.js';
-import { initListeners } from './listeners.js';
-import { initUIButtons } from './uiButtons.js';
+import { setupSettings } from './js/settings.js';
+import { addResizeListener} from './js/resize.js';
+import { initListeners } from './js/listeners.js';
+import { initUIButtons } from './js/uiButtons.js';
 
 // Tools
-import ToolManager from './tools/ToolManager.js';
-import LineTool from './tools/LineTool.js';
-import RectangleTool from './tools/RectangleTool.js';
+import ToolManager from './js/managers/ToolManager.js';
+import LineTool from './js/tools/LineTool.js';
+import RectangleTool from './js/tools/RectangleTool.js';
 
 // application shared state manager
-import { app } from './app.js';
+import { App } from './js/App.js';
 
 // 2d sketches and 3d objects
-import Build from './Build.js';
+import Build from './js/singletons/Build.js';
 
+
+export const app = new App();
 
 let renderer, controls;
 
@@ -44,9 +47,9 @@ let background = new THREE.Color(0xffffff);
 let cameraZoom, cameraFar, frustrumSize;
 
 // Run startup animation, then start main app
-//runStartupAnimation(renderer, main);
+//runStartupAnimation(renderer, main); 
 
-const size = 1000;
+let size = 100;
 
 let axes;
 
@@ -64,6 +67,9 @@ function init () {
 
   renderer = createRenderer();
 
+  // Set default size of axes
+  app.state.size = size;
+
   // center to draw plane.
 
   // Set camera position and orientation;
@@ -74,7 +80,7 @@ function init () {
   // make cube size based on the two furthest vertexes in the object across all layers.
 
   cameraZoom = 3.4 / size;
-  cameraFar = size * 4;
+  cameraFar = size * 6;
 
   // camera
   camera = new Camera(defaultOrbit, center, cameraFar);
@@ -95,8 +101,8 @@ function init () {
   
   // tools
   toolManager = new ToolManager();
-  //lineToolInstance = new LineTool(scene, raycast, cube, build);
-  rectangleToolInstance = new RectangleTool(scene, raycast, cube, build);
+  //lineToolInstance = new LineTool(scene, raycast, build);
+  rectangleToolInstance = new RectangleTool(scene, raycast, build);
 
   // Inject into appContext
   app.renderer = renderer;
@@ -163,7 +169,7 @@ function animate () {
   // from raycast.js
   castRay();
   // Set up scene logic
-  addSceneLogic(app, app.axes);
+  addSceneLogic(app, app.raycast, app.axes, new Plane(size));
 
   app.controls.update();
   app.camera.updateProjectionMatrix();

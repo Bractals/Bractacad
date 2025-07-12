@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import DrawingTool from './DrawingTool.js';
-import { app } from "/js/app.js";
+import { app } from "../../main.js";
 
 export default class LineTool extends DrawingTool {
   constructor(scene, raycast, cube, build) {

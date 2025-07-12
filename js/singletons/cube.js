@@ -1,8 +1,8 @@
 import * as THREE from 'three';
-import { app } from './app.js';
+import { app } from '../../main.js';
 
-import gridVertexShader from '../shaders/grid.vert.glsl';
-import gridFragmentShader from '../shaders/grid.frag.glsl';
+import gridVertexShader from '../../shaders/grid.vert.glsl';
+import gridFragmentShader from '../../shaders/grid.frag.glsl';
 import { cloneUniforms } from 'three/src/renderers/shaders/UniformsUtils.js';
 
 // Super Cube

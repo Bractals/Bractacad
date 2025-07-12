@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { app } from './app.js';
+import { app } from '../main.js';
 
 
 export function initListeners(toolManager, lineTool) {
@@ -18,7 +18,6 @@ export function initListeners(toolManager, lineTool) {
   });
 
   window.addEventListener('pointermove', (e) => {
-    app.raycast.clicked = true;
     toolManager.onPointerMove(e);
   });
 
@@ -40,6 +39,7 @@ export function initListeners(toolManager, lineTool) {
   });
 
   window.addEventListener('pointerdown', (e) => {
+    app.raycast.clicked = true;
     // ignore clicks inside menu  
     if (e.target.closest('.menu')) return;
 
@@ -51,6 +51,7 @@ export function initListeners(toolManager, lineTool) {
 
   window.addEventListener('pointerup', (e) => {
     toolManager.onPointerUp(e);
+    app.raycast.clicked = false;
   });
 
   const planeCams = {

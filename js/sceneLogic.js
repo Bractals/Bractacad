@@ -1,18 +1,31 @@
-export function addSceneLogic(app, axes) {
+export function addSceneLogic(app, raycast, axes, Plane) {
 
   // Highlight the plane
   for (const plane of axes.planes) {
-    const highlight = plane === app.raycast.object && plane.userData.type === 'axisPlane';
+    const highlight = plane === raycast.object && plane.userData.type === 'axisPlane';
     plane.material.color.set(highlight ? 0x00ff00 : 0x808080);
   }
   // Axes plane hover/click logic
   if (
-    app.raycast.object &&
-    app.raycast.object.userData.type === 'axisPlane' &&
-    app.raycast.clicked
+    raycast.object &&
+    raycast.object.userData.type === 'axisPlane' &&
+    raycast.clicked
   ) {
     // If mouse is clicked, create a new plane in the same orientation
-    //createNewPlaneFromAxesPlane(app.raycast.object);
-    app.raycast.clicked = false;
+    createNewPlaneFromAxesPlane(app, raycast.object, axes, Plane);
+    raycast.clicked = false;
   }
+}
+
+function createNewPlaneFromAxesPlane(app, object, axes, Plane) {
+  // create new draw plane
+  const drawPlane = Plane;
+  object.updateMatrixWorld(true);
+  drawPlane.applyMatrix4(object.matrixWorld);
+
+  app.scene.remove(axes);
+  app.state.drawPlane = drawPlane;
+  app.scene.add(drawPlane); 
+
+
 }

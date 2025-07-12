@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { app } from './app.js';
+import { app } from '../main.js';
 
 export function initUIButtons({
   toolManager,

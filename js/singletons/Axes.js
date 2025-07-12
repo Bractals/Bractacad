@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { app } from './app.js';
+import { app } from '../../main.js';
 
 // Axes
 export class Axes extends THREE.Group {
@@ -152,8 +152,8 @@ export class Axes extends THREE.Group {
     polygonOffset: true,
     polygonOffsetFactor: 1,
     polygonOffsetUnits: 1,
-    depthWrite: false,
-    depthTest: false,
+    depthWrite: true,
+    depthTest: true,
     blending: THREE.NormalBlending
     });
   }
@@ -171,10 +171,18 @@ export class Axes extends THREE.Group {
 
     const outlineMaterial = new THREE.LineBasicMaterial({
       color: 0x000000,
+      transparent: false,
+      polygonOffset: true,
+      polygonOffsetFactor: 1,
+      polygonOffsetUnits: 1,
+      depthWrite: false,
       depthTest: true,
-      depthWrite: true
+      blending: THREE.NormalBlending
     });
-    return new THREE.LineLoop(outlineGeometry, outlineMaterial);
+
+    const mesh = new THREE.LineLoop(outlineGeometry, outlineMaterial);
+
+    return mesh;
   }
 
   createPlaneLabel(label) {
@@ -227,6 +235,9 @@ export class Axes extends THREE.Group {
     const normal = new THREE.Vector3(0, 0, 1).normalize();
     mesh.quaternion.setFromUnitVectors(up, normal);
 
+    // render on top
+    mesh.renderOrder = 999;
+
     return mesh;
   }
 
@@ -257,8 +268,8 @@ export class Axes extends THREE.Group {
       map: texture,
       transparent: true,
       opacity: 1,
-      depthTest: true,
-      depthWrite: false
+      depthWrite: true,
+      depthTest: false
     });
 
     const sprite = new THREE.Sprite(material);

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import ray from './ray.js';
-import { app } from './app.js';
+import ray from './singletons/ray.js';
+import { app } from '../main.js';
 
 // 2D screen point
 const pointer = new THREE.Vector2();
@@ -9,6 +9,7 @@ const pointer = new THREE.Vector2();
 let raycast = {
   point: null,
   object: null,
+  face: null,
   clicked: false
 };
 
@@ -25,7 +26,6 @@ function onPointerMove(e) {
   pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
   pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
 }
-
 document.addEventListener('pointermove', onPointerMove, false);
 
 export function castRay() {
@@ -34,7 +34,7 @@ export function castRay() {
 
   planes = app.cube.planes;
 
-  // all scene children, recursive = false
+  // all scene children, recursive
   const intersects = ray.intersectObjects(app.scene.children, true);
   
   //console.log('Pointer:', pointer);
@@ -44,6 +44,7 @@ export function castRay() {
       intersection = intersects[0];
       raycast.point = intersection.point;
       raycast.object = intersection.object;
+      raycast.face = intersection.face;
     }
   } else {
     raycast.point = null;
