@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import ray from './singletons/ray.js';
-import { app } from '../main.js';
+import ray from './ray.js';
+import { app } from './app.js';
 
 // 2D screen point
 const pointer = new THREE.Vector2();
@@ -13,10 +13,6 @@ let raycast = {
   clicked: false
 };
 
-
-// map of plan objects
-let planes;
-
 let intersection;
 
 // Convert world point to local point
@@ -26,16 +22,14 @@ function onPointerMove(e) {
   pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
   pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
 }
-document.addEventListener('pointermove', onPointerMove, false);
+document.addEventListener('pointermove', onPointerMove, { passive: true });
 
 export function castRay() {
   // find intersections
-  ray.setFromCamera(pointer, app.camera);
-
-  planes = app.cube.planes;
+  ray.setFromCamera(pointer, app.runtime.camera);
 
   // all scene children, recursive
-  const intersects = ray.intersectObjects(app.scene.children, true);
+  const intersects = ray.intersectObjects(app.runtime.scene.children, true);
   
   //console.log('Pointer:', pointer);
   if (intersects.length > 0) {

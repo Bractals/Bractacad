@@ -1,9 +1,9 @@
 import LayerManager from './LayerManager.js';
 
-class SceneManager {
+export default class SceneManager {
   constructor(scene) {
     this.scene = scene;
-    this.layerManager = new LayerManager(scene);
+    this.layerManager = new LayerManager(this.scene);
   }
 
   addObject(layerName, id, obj) {

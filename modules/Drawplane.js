@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 // Axis planes
-export class Plane extends THREE.Group {
+export class Drawplane extends THREE.Group {
   constructor(size = 100) {
     super();
 
@@ -39,4 +39,4 @@ export class Plane extends THREE.Group {
 
 }
 
-export default Plane;
+export default Drawplane;

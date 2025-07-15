@@ -1,6 +1,3 @@
-import { app } from '../main.js';
-
-
 // document.querySelector('#menu button:contains("Import")')?.addEventListener('click', () => {
 //   console.log("Import clicked");
 //   // open file input or trigger load

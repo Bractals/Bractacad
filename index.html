@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bractacad</title>
+  <title>Rapicad</title>
   <link rel="icon" href="/icons/favicon/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -59,14 +59,6 @@
         <ul class="dropdown">
           <li><button id="fullscreen-btn">Fullscreen</button></li>
           <li><button id="center-btn"><span class="button-label">Center</span></button></li>
-          <li id="camera-controls">
-            <button id="xyCamera-btn"><span class="button-label">XY</span></button>
-            <button id="abCamera-btn"><span class="button-label">AB</span></button>
-            <button id="zyCamera-btn"><span class="button-label">ZY</span></button>
-            <button id="cbCamera-btn"><span class="button-label">CB</span></button>
-            <button id="xzCamera-btn"><span class="button-label">XZ</span></button>
-            <button id="acCamera-btn"><span class="button-label">AC</span></button>
-          </li>
         </ul>
       </li>
 
@@ -92,55 +84,9 @@
 
         <ul class="tab-content">
           <li>
-            <label id="toggle-all-planes-label">
-              <input type="checkbox" id="toggle-all-planes" checked>
-              <span>Planes</span>
-            </label>
-          </li>
-
-          <li id="plane-toggles">
-            <label>
-              <input type="checkbox" id="toggle-xy" checked>
-              <span>XY</span>
-            </label>
-            <label>
-              <input type="checkbox" id="toggle-ab" checked>
-              <span>AB</span>
-            </label>
-            <label>
-              <input type="checkbox" id="toggle-zy" checked>
-              <span>ZY</span>
-            </label>
-            <label>
-              <input type="checkbox" id="toggle-cb" checked>
-              <span>CB</span>
-            </label>
-            <label>
-              <input type="checkbox" id="toggle-xz" checked>
-              <span>XZ</span>
-            </label>
-            <label>
-              <input type="checkbox" id="toggle-ac" checked>
-              <span>AC</span>
-            </label>
-          </li>
-
-          <li>
-            <label id="toggle-grids-label">
-              <input type="checkbox" id="toggle-grids" checked>
-              <span>Grids</span>
-            </label>
-          </li>
-          <li>
-            <label id="toggle-borders-label">
-              <input type="checkbox" id="toggle-borders" checked>
-              <span>Borders</span>
-            </label>
-          </li>
-          <li>
-            <label id="toggle-labels-label">
-              <input type="checkbox" id="toggle-labels" checked>
-              <span>Labels</span>
+            <label id="toggle-a-label">
+              <input type="checkbox" id="toggle-a" checked>
+              <span>Something</span>
             </label>
           </li>
 
@@ -156,6 +102,7 @@
         </div>
         <div class="tab-content">
           <div class="tool-carousel">
+            <button class="tool-btn" id="select-btn">➚</button>
             <button class="tool-btn" id="line-btn">✏️</button>
             <button class="tool-btn">📏</button>
             <button class="tool-btn" id="rectangle-btn">🔲</button>
@@ -209,6 +156,6 @@
   </div>
 
   <script type="module" src="main.js"></script>
-  <script type="module" src="js/menu.js"></script>
+  <script type="module" src="./modules/menu.js"></script>
 </body>
 </html>

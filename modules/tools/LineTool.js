@@ -1,12 +1,9 @@
 import * as THREE from 'three';
-import DrawingTool from './DrawingTool.js';
-import { app } from "../../main.js";
+import Tool from './Tool.js';
 
-export default class LineTool extends DrawingTool {
-  constructor(scene, raycast, cube, build) {
-    super(scene, raycast);
-    this.cube = cube;
-    this.build = build;
+export default class LineTool extends Tool {
+  constructor(app) {
+    super(app);
 
     // Snap interval
     this.gridSize = 1;
@@ -23,7 +20,7 @@ export default class LineTool extends DrawingTool {
 
     this.finishSketch = false;
 
-    this.activePlane = raycast.plane;
+    this.activePlane = app.runtime.raycast.plane;
   }
 
   onPointerMove() {

@@ -1,9 +1,9 @@
 import * as THREE from 'three';
-import DrawingTool from './DrawingTool.js';
+import Tool from './Tool.js';
 
-export default class RectangleTool extends DrawingTool {
-  constructor(scene, raycast) {
-    super(scene, raycast);
+export default class RectangleTool extends Tool {
+  constructor(app) {
+    super(app);
     this.tempLines = [];
 
     this.lineMaterial = new THREE.LineBasicMaterial({

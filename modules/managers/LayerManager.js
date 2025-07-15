@@ -1,4 +1,4 @@
-import Layer from '../singletons/Layer.js';
+import Layer from '../Layer.js';
 
 export default class LayerManager {
   constructor(scene) {

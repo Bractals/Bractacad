@@ -1,20 +1,38 @@
-import raycast, { castRay } from '/js/raycast.js';
+// ToolsManager should own tool instantiation and lifecycle.
+import SelectTool from '../tools/SelectTool.js';
+import LineTool from '../tools/LineTool.js';
+import RectangleTool from '../tools/RectangleTool.js';
+
 
 export default class ToolManager {
-  constructor() {
+  constructor(app) {
+  this.app = app;
+  this.tools = {
+    select: new SelectTool(app),
+    line: new LineTool(app),
+    rectangle: new RectangleTool(app),
+  };
     this.activeTool = null;
   }
 
-  setTool(tool) {
-    if (this.activeTool === tool) {
+  setTool(name) {
+    if (name == null) {
       this.activeTool?.disable?.();
       this.activeTool = null;
-      console.log('Tool deselected');
+      this.app.managers.ui.updateToolUI();
+      return;
+    }
+
+    const tool = this.tools[name];
+    if (!tool) return;
+
+    if (this.activeTool === tool) {
+      tool?.disable?.();
+      this.activeTool = null;
     } else {
       this.activeTool?.disable?.(); // disable the previous tool
       this.activeTool = tool;
-      this.activeTool?.enable?.();
-      console.log('Tool selected:', tool.constructor.name);
+      tool?.enable?.();
     }
   }
 

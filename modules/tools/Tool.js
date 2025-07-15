@@ -1,8 +1,10 @@
-// tools/DrawingTool.js
-export default class DrawingTool {
-  constructor(scene, raycast) {
-    this.scene = scene;
-    this.raycast = raycast;
+import * as THREE from 'three';
+
+export default class Tool {
+  constructor(app) {
+    this.app = app;
+    this.scene = app.runtime.scene;
+    this.raycast = app.runtime.raycast;
 
     this.enabled = false;
     this.isDrawing = false;

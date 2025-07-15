@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { app } from '../../main.js';
 
 // Axes
 export class Axes extends THREE.Group {

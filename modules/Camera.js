@@ -1,21 +1,19 @@
 import * as THREE from 'three';
-import { app } from '../../main.js';
 
 export default class Camera extends THREE.OrthographicCamera {
-  constructor(defaultOrbit, center, far) {
+  constructor(defaultOrbit, center, zoom, far) {
     const aspect = window.innerWidth / window.innerHeight;
+
     const frustrumSize = 50;
 
     const halfW = aspect * frustrumSize / 2;
     const halfH = frustrumSize / 2;
 
-    super(-halfW, halfW, halfH, -halfH, 0.01, far);
+    super(-halfW, halfW, halfH, -halfH, zoom, far);
 
     this.defaultOrbit = defaultOrbit;
     this.center = center;
 
-
-    this.frustrumSize = 50;
     this.aspect = aspect;
 
     // Apply changes

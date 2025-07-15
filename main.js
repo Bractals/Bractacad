@@ -1,179 +1,139 @@
 import * as THREE from 'three';
 
 // Shared pieces
-import createRenderer from './js/singletons/renderer.js';
-import scene from './js/singletons/scene.js';
-import Camera from './js/singletons/Camera.js';
-import createControls from './js/singletons/controls.js';
-import { addSceneLogic } from './js/sceneLogic.js';
-import Plane from './js/singletons/Plane.js';
+import createRenderer from './modules/renderer.js';
+import scene from './modules/scene.js';
+import Camera from './modules/Camera.js';
+import createControls from './modules/controls.js';
+import { addSceneLogic } from './modules/sceneLogic.js';
+import Drawplane from './modules/Drawplane.js';
 
-import cube from './js/singletons/cube.js';
-import raycast, { castRay } from './js/raycast.js';
+//import cube from './modules/cube.js';
+import raycast, { castRay } from './modules/raycast.js';
 
-import Axes from './js/singletons/Axes.js';
+import Axes from './modules/Axes.js';
 
 //import { runStartupAnimation } from './startupAnimation.js';
 
 // Utility
-import { setupSettings } from './js/settings.js';
-import { addResizeListener} from './js/resize.js';
-import { initListeners } from './js/listeners.js';
-import { initUIButtons } from './js/uiButtons.js';
-
-// Tools
-import ToolManager from './js/managers/ToolManager.js';
-import LineTool from './js/tools/LineTool.js';
-import RectangleTool from './js/tools/RectangleTool.js';
+//import { setupSettings } from './modules/settings.js';
+import { addResizeListener} from './modules/resize.js';
 
 // application shared state manager
-import { App } from './js/App.js';
+import { app } from './modules/app.js';
 
-// 2d sketches and 3d objects
-import Build from './js/singletons/Build.js';
+// Managers
+import ControlsManager from './modules/managers/ControlsManager.js';
+import FileManager from './modules/managers/FileManager.js';
+import InputManager from './modules/managers/InputManager.js';
+import LayerManager from './modules/managers/LayerManager.js';
+import SceneManager from './modules/managers/SceneManager.js';
+import ToolManager from './modules/managers/ToolManager.js';
+import UIManager from './modules/managers/UIManager.js';
 
-
-export const app = new App();
-
-let renderer, controls;
-
-// Camera
-let camera, center, defaultOrbit;
 
 // White background
 let background = new THREE.Color(0xffffff);
 
-// Camera settings
-let cameraZoom, cameraFar, frustrumSize;
-
 // Run startup animation, then start main app
-//runStartupAnimation(renderer, main); 
+//runStartupAnimation(renderer, main);
 
+// Default size of starting axis planes
 let size = 100;
-
-let axes;
-
-// Where 2D drawings and 3D objects are stored
-let build;
-
-// Tools
-let toolManager, lineToolInstance, rectangleToolInstance;
 
 init();
 animate();
 
 function init () {
-  scene.background = background;
-
-  renderer = createRenderer();
-
-  // Set default size of axes
-  app.state.size = size;
-
-  // center to draw plane.
 
   // Set camera position and orientation;
   // center at origin to start
-  center = new THREE.Vector3(0, 0, 0);
-  defaultOrbit = new THREE.Vector3(-size, size, size-400);
+  const center = new THREE.Vector3(0, size/2, 0);
+  const defaultOrbit = new THREE.Vector3(-size, size, size-400);
+  let cameraZoom = 0.2;
+  let cameraFar = size * 6;
+  let frustrumSize = 50;
 
-  // make cube size based on the two furthest vertexes in the object across all layers.
 
-  cameraZoom = 3.4 / size;
-  cameraFar = size * 6;
+  // Inject into app context
+  app.runtime.renderer = createRenderer();
+  app.runtime.scene = scene;
+  app.runtime.camera = new Camera(defaultOrbit, center, cameraZoom, cameraFar);
 
-  // camera
-  camera = new Camera(defaultOrbit, center, cameraFar);
+  app.runtime.raycast = raycast;
+  app.runtime.size = size;
+  app.runtime.axes = new Axes(size);
+
+  // canvas background
+  app.runtime.scene.background = background;
 
   // Orbit controls
-  controls = createControls(camera, renderer);
-  camera.attachControls(controls);
+  app.runtime.controls = createControls(app.runtime.camera, app.runtime.renderer);
+  app.runtime.camera.attachControls(app.runtime.controls);
+
   // set camera
-  camera.setPos(defaultOrbit);
-  camera.setTarget(center);
-  camera.zoom = cameraZoom;
+  app.runtime.camera.setPos(defaultOrbit);
+  app.runtime.camera.setTarget(center);
+  app.runtime.camera.zoom = cameraZoom;
 
-  // Create Axes
-  axes = new Axes(size);
-
-  // Prepare 3D build box
-  build = new Build(cube.planes, size);
-  
-  // tools
-  toolManager = new ToolManager();
-  //lineToolInstance = new LineTool(scene, raycast, build);
-  rectangleToolInstance = new RectangleTool(scene, raycast, build);
-
-  // Inject into appContext
-  app.renderer = renderer;
-  app.scene = scene;
-  app.camera = camera;
-  app.controls = controls;
-
-
-  app.raycast = raycast;
-  app.cube = cube;
-  app.build = build;
-
-  app.axes = axes;
+  // After controls and other runtime values are created
+  app.initManagers = function () {
+    this.managers.controls = new ControlsManager(this);
+    this.managers.input = new InputManager(this);
+    this.managers.tools = new ToolManager(this);
+    this.managers.scene = new SceneManager(this);
+    this.managers.layers = new LayerManager(this);
+    this.managers.file = new FileManager(this);
+    this.managers.ui = new UIManager(this);
+  };
 
   // update camera
-  app.camera.refresh();
+  app.runtime.camera.refresh();
 
   // Dynamic resizing of window
-  addResizeListener(app.camera, frustrumSize, app.renderer);
+  addResizeListener(app.runtime.camera, frustrumSize, app.runtime.renderer);
 
   // Ready settings
-  setupSettings();
+  //setupSettings();
 
-  // Set up listeners
-  initListeners(toolManager, lineToolInstance);
-  // Set up UI logic
-  initUIButtons({
-    toolManager,
-    lineToolInstance,
-    rectangleToolInstance
-  });
-
-  // Add the CAD cube to scene
-  //app.scene.add(app.cube);
+  // Initialise app state and managers.
+  app.init();
 
   // Add axes
-  app.scene.add(axes);
+  app.runtime.scene.add(app.runtime.axes);
 
   // Add the build box
-  app.scene.add(app.build);
+  //app.scene.add(app.build);
 
   // Add lights for 3d object
   // Ambient light for base visibility
   const ambient = new THREE.AmbientLight(0xffffff, 0.5);
-  scene.add(ambient);
+  app.runtime.scene.add(ambient);
 
   // Directional light like a headlight
   const light = new THREE.DirectionalLight(0xffffff, 0.8);
-  light.position.set(app.cube.pSize, app.cube.pSize, -app.cube.pSize);
-  scene.add(light);
+  // Should update to account for object size
+  light.position.set(size+100, size, -size+100);
+  app.runtime.scene.add(light);
 
-  // Optional: camera-attached headlight
-  camera.add(new THREE.DirectionalLight(0xffffff, 0.5));
+  // camera-attached headlight
+  app.runtime.camera.add(new THREE.DirectionalLight(0xffffff, 0.5));
 
 }
 
 function animate () {
-  // Update grid scale
-  //app.cube.scaleGrids(app.renderer, app.camera);
-
   // Update label scale
-  app.axes.scaleLabels(app.camera);
+  app.runtime.axes.scaleLabels(app.runtime.camera);
 
   // from raycast.js
   castRay();
-  // Set up scene logic
-  addSceneLogic(app, app.raycast, app.axes, new Plane(size));
 
-  app.controls.update();
-  app.camera.updateProjectionMatrix();
-  app.renderer.render(app.scene, app.camera);
+  // Set up scene logic
+  addSceneLogic(app, Drawplane);
+
+  app.runtime.controls.update();
+  app.runtime.camera.updateProjectionMatrix();
+  app.runtime.renderer.render(app.runtime.scene, app.runtime.camera);
 
   // tells browser to perform animation
   requestAnimationFrame(animate);

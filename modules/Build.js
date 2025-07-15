@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
-import { app } from '../../main.js';
+import { app } from './app.js';
 
 export class Build extends THREE.Group {
   constructor(planes, planeSize) {

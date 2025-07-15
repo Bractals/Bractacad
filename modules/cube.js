@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { app } from '../../main.js';
 
 import gridVertexShader from '../../shaders/grid.vert.glsl';
 import gridFragmentShader from '../../shaders/grid.frag.glsl';
