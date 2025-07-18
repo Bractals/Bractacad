@@ -5,7 +5,7 @@ export class Axes extends THREE.Group {
     super();
 
     this.size = 100; // Default size of axes
-    this.labelSize = this.size * 0.025; // Size of axis labels
+    this.labelSize = this.size * 0.02; // Size of axis labels
     this.labelScale = this.labelSize;
     this.Offset = this.size + this.labelSize * 4; // Offset for labels from axis lines
 
@@ -35,8 +35,8 @@ export class Axes extends THREE.Group {
       z: 0x0000FF, // Blue for Z plane
     };
 
-    const createAxisLineMaterial = (color) => new THREE.LineBasicMaterial({
-      color: color,
+    const axisLineMaterial = (colour) => new THREE.LineBasicMaterial({
+      color: colour,
       side: THREE.DoubleSide,
       transparent: true,
       opacity: 0.2,
@@ -60,9 +60,9 @@ export class Axes extends THREE.Group {
       new THREE.Vector3(0, 0, -this.size),
       new THREE.Vector3(0, 0, this.size)
     ]);
-    this.xAxis = new THREE.Line(xAxisGeometry, createAxisLineMaterial(this.colours.x));
-    this.yAxis = new THREE.Line(yAxisGeometry, createAxisLineMaterial(this.colours.y));
-    this.zAxis = new THREE.Line(zAxisGeometry, createAxisLineMaterial(this.colours.z));
+    this.xAxis = new THREE.Line(xAxisGeometry, axisLineMaterial(this.colours.x));
+    this.yAxis = new THREE.Line(yAxisGeometry, axisLineMaterial(this.colours.y));
+    this.zAxis = new THREE.Line(zAxisGeometry, axisLineMaterial(this.colours.z));
 
     // Add axis lines to axis group
     this.axisGroup.add(this.xAxis, this.yAxis, this.zAxis);
@@ -87,7 +87,7 @@ export class Axes extends THREE.Group {
 
     // Add axis lines & labels to object
     this.add(this.axisGroup, this.labelGroup);
-    
+
     this.name = 'axes';
   }
 

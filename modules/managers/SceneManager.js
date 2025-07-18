@@ -39,8 +39,9 @@ export default class SceneManager {
   starLogic(Drawplane) {
     // Highlight the plane
     for (const plane of this.star.planes) {
+      let key = plane.name;
       const highlight = plane === this.raycast.object && plane.userData.type === 'axisPlane';
-      plane.material.color.set(highlight ? 0x66ff66 : 0x808080);
+      plane.material.color.set(highlight ? this.star.colours[key] : 0x808080);
     }
 
     // Star plane hover/click logic

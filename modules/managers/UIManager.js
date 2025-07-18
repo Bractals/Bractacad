@@ -142,7 +142,7 @@ export default class UIManager {
     this.toggleAxes.addEventListener('change', () => {
       const axes = this.app.runtime.scene.getObjectByName('axes');
       if (axes) {
-        axes.visible = toggleAxes.checked;
+        axes.visible = this.toggleAxes.checked;
       }
     });
 
