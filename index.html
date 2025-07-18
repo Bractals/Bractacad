@@ -6,6 +6,13 @@
   <title>Rapicad</title>
   <link rel="icon" href="/icons/favicon/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="css/style.css">
+
+  <script>
+    // Hide root document element until state is restored
+    // Possibly move this to a separate preload script
+    document.documentElement.classList.add('preload-state');
+  </script>
+
 </head>
 <body>
   <canvas id="background"></canvas>
@@ -74,7 +81,8 @@
   <button id="toggle-inspector-btn" class="toggle-sidebar-btn" style="right: 149.3px;">&#x25B6;</button>
   <div id="inspector" class="menu">
     <div class="inspector-content">
-      <div class="tab collapsed">
+
+      <div class="tab">
         <div class="tab-header">
           <button class="toggle-tab-btn">
             <span class="arrow">‹</span>
@@ -84,16 +92,16 @@
 
         <ul class="tab-content">
           <li>
-            <label id="toggle-a-label">
-              <input type="checkbox" id="toggle-a" checked>
-              <span>Something</span>
+            <label id="toggle-axes-label">
+              <input type="checkbox" id="toggle-axes" checked>
+              <span>Axes</span>
             </label>
           </li>
 
         </ul>
       </div>
 
-      <div class="tab collapsed">
+      <div class="tab">
         <div class="tab-header">
           <button class="toggle-tab-btn">
             <span class="arrow">‹</span>
@@ -102,7 +110,6 @@
         </div>
         <div class="tab-content">
           <div class="tool-carousel">
-            <button class="tool-btn" id="select-btn">➚</button>
             <button class="tool-btn" id="line-btn">✏️</button>
             <button class="tool-btn">📏</button>
             <button class="tool-btn" id="rectangle-btn">🔲</button>
@@ -111,7 +118,7 @@
         </div>
       </div>
 
-      <div class="tab collapsed">
+      <div class="tab">
         <div class="tab-header">
           <button class="toggle-tab-btn">
             <span class="arrow">‹</span>
@@ -121,6 +128,18 @@
         <ul class="tab-content">
           <li><span>[icon]--</span>Layer 1</li>
           <li><span>[icon]--</span>Layer 2</li>
+        </ul>
+      </div>
+
+      <div class="tab">
+        <div class="tab-header">
+          <button class="toggle-tab-btn">
+            <span class="arrow">‹</span>
+            <span class="tab-label">Focus</span>
+          </button>
+        </div>
+        <ul class="tab-content">
+          <li>Active</li>
         </ul>
       </div>
 
@@ -156,6 +175,5 @@
   </div>
 
   <script type="module" src="main.js"></script>
-  <script type="module" src="./modules/menu.js"></script>
 </body>
 </html>

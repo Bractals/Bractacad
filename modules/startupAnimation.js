@@ -17,9 +17,9 @@ export function runStartupAnimation(renderer, onComplete) {
   const gridSize = pSize;
   const gridDivisions = 10;
 
-  // Add axes helper and cube
-  const axesHelper = new THREE.AxesHelper(pSize);
-  scene.add(axesHelper);
+  // Add star helper and cube
+  const starHelper = new THREE.StarHelper(pSize);
+  scene.add(starHelper);
 
   // XY Plane and Grid
   const xyMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.2 });
@@ -106,7 +106,7 @@ export function runStartupAnimation(renderer, onComplete) {
       camera.updateProjectionMatrix();
     } else if (animationDone && Date.now() - pauseStartTime > pauseDuration) {
       // Remove animation objects from the scene
-      scene.remove(xyPlane, xyGrid, xzPlane, xzGrid, yzPlane, yzGrid, axesHelper);
+      scene.remove(xyPlane, xyGrid, xzPlane, xzGrid, yzPlane, yzGrid, starHelper);
       // Call the callback to start the main app
       onComplete();
       return;

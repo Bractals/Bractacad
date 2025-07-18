@@ -26,6 +26,10 @@ ul li {
   background-color: white;
   border-bottom: 1px dashed rgb(210, 210, 210);
 }
+/* Hide DOM on refresh until state is restored */
+.preload-state {
+  display: none !important;
+}
 .toggle-sidebar-btn {
   position: absolute;
   display: flex;
@@ -52,7 +56,7 @@ ul li {
   background-color: rgb(210, 210, 210);
 }
 #toggle-menu-btn.collapsed {
-  transform: translateX(-81px);
+  transform: translateX(-82px);
 }
 #menu {
   position: fixed;

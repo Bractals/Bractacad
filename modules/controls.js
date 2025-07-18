@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-export default function createControls(camera, renderer) {
+export default function controls(camera, renderer) {
   const controls = new OrbitControls(camera, renderer.domElement);
 
   // Settings

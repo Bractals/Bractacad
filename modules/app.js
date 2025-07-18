@@ -20,9 +20,11 @@ export const app = {
     camera: null,
     controls: null,
     raycast: null,
-    size: null, // for centering camera on object
+    size: null,
     drawPlane: null,
-    axes: null,
+    star: null,
+    active: null, // active object
+    focus: null, // for centering camera on the active object
   },
 
   managers: {},

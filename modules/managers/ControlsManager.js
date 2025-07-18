@@ -10,11 +10,15 @@ export default class ControlsManager {
 
   init() {
     this.enablePan(false);
+    this.enableRotate(true);
   }
 
   // Space key toggles pan mode
   spaceDown(down) {
     this.enablePan(down);
+    // debug clipping when panning and resetting alot
+    console.log(this.app.runtime.camera.position);
+    console.log(this.app.runtime.camera.far);
   }
 
   setMouseButton(button, action) {

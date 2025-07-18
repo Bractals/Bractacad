@@ -4,14 +4,14 @@ import * as THREE from 'three';
 import createRenderer from './modules/renderer.js';
 import scene from './modules/scene.js';
 import Camera from './modules/Camera.js';
-import createControls from './modules/controls.js';
-import { addSceneLogic } from './modules/sceneLogic.js';
+import controls from './modules/controls.js';
 import Drawplane from './modules/Drawplane.js';
 
 //import cube from './modules/cube.js';
 import raycast, { castRay } from './modules/raycast.js';
 
-import Axes from './modules/Axes.js';
+import Star from './modules/Star.js';
+import axes from './modules/Axes.js';
 
 //import { runStartupAnimation } from './startupAnimation.js';
 
@@ -23,6 +23,7 @@ import { addResizeListener} from './modules/resize.js';
 import { app } from './modules/app.js';
 
 // Managers
+import CameraManager from './modules/managers/CameraManager.js';
 import ControlsManager from './modules/managers/ControlsManager.js';
 import FileManager from './modules/managers/FileManager.js';
 import InputManager from './modules/managers/InputManager.js';
@@ -38,7 +39,7 @@ let background = new THREE.Color(0xffffff);
 // Run startup animation, then start main app
 //runStartupAnimation(renderer, main);
 
-// Default size of starting axis planes
+// Default size of starting axis planes, distances from lights
 let size = 100;
 
 init();
@@ -46,38 +47,29 @@ animate();
 
 function init () {
 
-  // Set camera position and orientation;
-  // center at origin to start
-  const center = new THREE.Vector3(0, size/2, 0);
-  const defaultOrbit = new THREE.Vector3(-size, size, size-400);
+  const defaultOrbit = new THREE.Vector3(-size, size*1.25, size);
   let cameraZoom = 0.2;
   let cameraFar = size * 6;
   let frustrumSize = 50;
 
-
-  // Inject into app context
+  // Setup
   app.runtime.renderer = createRenderer();
   app.runtime.scene = scene;
-  app.runtime.camera = new Camera(defaultOrbit, center, cameraZoom, cameraFar);
+  app.runtime.camera = new Camera();
 
   app.runtime.raycast = raycast;
   app.runtime.size = size;
-  app.runtime.axes = new Axes(size);
+  app.runtime.star = new Star(size);
 
   // canvas background
   app.runtime.scene.background = background;
 
   // Orbit controls
-  app.runtime.controls = createControls(app.runtime.camera, app.runtime.renderer);
-  app.runtime.camera.attachControls(app.runtime.controls);
-
-  // set camera
-  app.runtime.camera.setPos(defaultOrbit);
-  app.runtime.camera.setTarget(center);
-  app.runtime.camera.zoom = cameraZoom;
+  app.runtime.controls = controls(app.runtime.camera, app.runtime.renderer);
 
   // After controls and other runtime values are created
   app.initManagers = function () {
+    this.managers.camera = new CameraManager(this);
     this.managers.controls = new ControlsManager(this);
     this.managers.input = new InputManager(this);
     this.managers.tools = new ToolManager(this);
@@ -87,8 +79,17 @@ function init () {
     this.managers.ui = new UIManager(this);
   };
 
+  // Initialise app state and managers.
+  app.init();
+
+  // set camera
+  app.managers.camera.setPosition(defaultOrbit);
+  app.managers.camera.setTarget(new THREE.Vector3(0, 0, 0));
+  app.managers.camera.setZoom(cameraZoom);
+  app.managers.camera.setFar(cameraFar);
+
   // update camera
-  app.runtime.camera.refresh();
+  app.managers.camera.refresh();
 
   // Dynamic resizing of window
   addResizeListener(app.runtime.camera, frustrumSize, app.runtime.renderer);
@@ -96,14 +97,11 @@ function init () {
   // Ready settings
   //setupSettings();
 
-  // Initialise app state and managers.
-  app.init();
+  // Add star
+  app.runtime.scene.add(app.runtime.star);
 
-  // Add axes
-  app.runtime.scene.add(app.runtime.axes);
-
-  // Add the build box
-  //app.scene.add(app.build);
+  // add axes
+  app.runtime.scene.add(axes);
 
   // Add lights for 3d object
   // Ambient light for base visibility
@@ -117,23 +115,23 @@ function init () {
   app.runtime.scene.add(light);
 
   // camera-attached headlight
-  app.runtime.camera.add(new THREE.DirectionalLight(0xffffff, 0.5));
-
+  app.managers.camera.attach(new THREE.DirectionalLight(0xffffff, 0.5));
 }
 
 function animate () {
-  // Update label scale
-  app.runtime.axes.scaleLabels(app.runtime.camera);
 
   // from raycast.js
   castRay();
 
-  // Set up scene logic
-  addSceneLogic(app, Drawplane);
-
   app.runtime.controls.update();
-  app.runtime.camera.updateProjectionMatrix();
   app.runtime.renderer.render(app.runtime.scene, app.runtime.camera);
+
+  // Set up scene logic
+  //addSceneLogic(app, Drawplane);
+  app.managers.scene.starLogic(Drawplane);
+
+  // Update label scale
+  axes.scaleLabels(app.runtime.camera);
 
   // tells browser to perform animation
   requestAnimationFrame(animate);
