@@ -10,13 +10,11 @@ let raycast = {
   point: null,
   object: null,
   face: null,
-  clicked: false
+  clicked: false,
+  localPoint: null
 };
 
-let intersection;
-
-// Convert world point to local point
-let localPoint;
+let currIntersection = null;
 
 function onPointerMove(e) {
   pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -31,18 +29,31 @@ export function castRay() {
   // all scene children, recursive
   const intersects = ray.intersectObjects(app.runtime.scene.children, true);
   
-  //console.log('Pointer:', pointer);
-  if (intersects.length > 0) {
+  let validIntersection = null;
 
-    if (isObjectVisible(intersects[0].object)) {
-      intersection = intersects[0];
-      raycast.point = intersection.point;
-      raycast.object = intersection.object;
-      raycast.face = intersection.face;
+  for (const intersect of intersects) {
+    if (intersect.object.userData.type === 'ignore') continue;
+    if (!isObjectVisible(intersect.object)) continue;
+    validIntersection = intersect;
+    break;
+  }
+
+  if (validIntersection) {
+    if (currIntersection !== validIntersection) {
+      raycast.point = validIntersection.point;
+      raycast.object = validIntersection.object;
+      raycast.face = validIntersection.face;
     }
+
+    currIntersection = validIntersection;
+
+    raycast.localPoint = raycast.object.parent.worldToLocal(validIntersection.point.clone());
+
   } else {
     raycast.point = null;
     raycast.object = null;
+    raycast.face = null;
+    raycast.localPoint = null;
   }
 }
 

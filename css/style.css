@@ -56,13 +56,13 @@ ul li {
   background-color: rgb(210, 210, 210);
 }
 #toggle-menu-btn.collapsed {
-  transform: translateX(-82px);
+  transform: translateX(-6rem);
 }
 #menu {
   position: fixed;
   top: 0;
   left: 0;
-  width: 82px;
+  width: 6rem;
   height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -72,6 +72,9 @@ ul li {
   pointer-events: auto;
   padding: 0;
   margin: 0;
+}
+#toggle-menu-btn {
+  left: 6rem;
 }
 #menu.collapsed {
   width: 0;
@@ -86,7 +89,6 @@ ul li {
   visibility: visible;
   display: flex;
   flex-direction: column;
-  text-align: left;
   margin: 0;
   padding: 0;
 }
@@ -101,8 +103,6 @@ ul li {
   display: flex;
   width: 100%;
   height: 100%;
-  text-align: left;
-  padding: 0 1rem;
   font: inherit;
   background: white;
   border: none;
@@ -127,6 +127,9 @@ ul li {
   padding: 0;
   pointer-events: auto;
   z-index: 1001;
+}
+.dropdown-toggle {
+  padding: 0;
 }
 #menu .dropdown .dropdown {
   top: 0;
@@ -207,7 +210,7 @@ ul li {
   align-items: stretch;
   top: 0;
   right: 0;
-  width: 150px;
+  max-width: 18rem;
   height: 100dvh;
   z-index: 1000;
   overflow-y: auto;
@@ -227,8 +230,11 @@ ul li {
   visibility: hidden;
   pointer-events: none;
 }
+#toggle-inspector-btn {
+  right: 14rem;
+}
 #toggle-inspector-btn.collapsed {
-  transform: translateX(149.5px);
+  transform: translateX(14rem);
 }
 #inspector ul {
   opacity: 1;
@@ -285,8 +291,10 @@ ul li {
 }
 .tab-content li {
   display: flex;
-  padding: 0;
-  width: 100%;
+  overflow-x: hidden;
+  flex-wrap: wrap;
+  padding: 0.25rem;
+  max-width: 100%;
   height: 100%;
   align-items: center;
 }
@@ -354,10 +362,34 @@ input[type="checkbox"] {
   border: 3px solid #000;
 }
 
+#drawPlane-menu li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  flex-wrap: nowrap;
+  overflow-x: hidden;
+  border-bottom: 1px dashed black;
+}
+
+#drawPlane-menu span, input {
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+#drawPlane-menu li input {
+  flex: 1;
+  width: 1.5rem;
+  height: 3rem;
+}
+
+
+
 
 
 #home-icon {
-  display: flex;
+  position: absolute;
   align-items: flex-start;
   top: 10px;
   left: 10px;
@@ -372,8 +404,9 @@ input[type="checkbox"] {
   padding: 4px 4px;
 }
 #about-section-header {
-  display: flex;
-  justify-content: space-between;
+  margin: 0;
+  padding: 20px;
+  font-size: 18px;
 
 }
 
@@ -405,7 +438,7 @@ input[type="checkbox"] {
   position: absolute;
   top: 4px;
   right: 8px;
-  font-size: 24px;
+  font-size: 28px;
   background: none;
   border: none;
   cursor: pointer;

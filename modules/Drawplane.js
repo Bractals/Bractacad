@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 // Axis planes
-export class Drawplane extends THREE.Group {
+export class Drawplane extends THREE.Object3D {
   constructor(size = 100) {
     super();
 
@@ -15,9 +15,10 @@ export class Drawplane extends THREE.Group {
     this.planeGeometry = new THREE.PlaneGeometry(this.size, this.size);
     this.planeMaterial = this.createPlaneMaterial();
 
-    const mesh = new THREE.Mesh(this.planeGeometry, this.planeMaterial);
+    const plane = new THREE.Mesh(this.planeGeometry, this.planeMaterial);
+    plane.userData.type = 'drawPlane';
 
-    this.add(mesh); 
+    this.add(plane); 
   }
 
   createPlaneMaterial() {

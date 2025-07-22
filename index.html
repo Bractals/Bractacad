@@ -17,7 +17,7 @@
 <body>
   <canvas id="background"></canvas>
 
-  <button id="toggle-menu-btn" class="toggle-sidebar-btn" style="left: 81.5px;">&#x25C0;</button>
+  <button id="toggle-menu-btn" class="toggle-sidebar-btn">&#x25C0;</button>
   <div id="menu" class="menu">
     <ul>
       <!--FILE-->
@@ -78,14 +78,16 @@
     </ul>
   </div>
   
-  <button id="toggle-inspector-btn" class="toggle-sidebar-btn" style="right: 149.3px;">&#x25B6;</button>
+  <button id="toggle-inspector-btn" class="toggle-sidebar-btn">&#x25B6;</button>
   <div id="inspector" class="menu">
     <div class="inspector-content">
 
       <div class="tab">
         <div class="tab-header">
           <button class="toggle-tab-btn">
-            <span class="arrow">‹</span>
+            <span class="arrow">
+              <img src="/icons/arrow-opened.svg" alt="arrow">
+            </span>
             <span class="tab-label">Toggle</span>
           </button>
         </div>
@@ -104,7 +106,9 @@
       <div class="tab">
         <div class="tab-header">
           <button class="toggle-tab-btn">
-            <span class="arrow">‹</span>
+            <span class="arrow">
+              <img src="/icons/arrow-opened.svg" alt="arrow">
+            </span>
             <span class="tab-label">Tools</span>
           </button>
         </div>
@@ -121,25 +125,55 @@
       <div class="tab">
         <div class="tab-header">
           <button class="toggle-tab-btn">
-            <span class="arrow">‹</span>
-            <span class="tab-label">Layers</span>
+            <span class="arrow">
+              <img src="/icons/arrow-opened.svg" alt="arrow">
+            </span>
+            <span class="tab-label">Focus</span>
           </button>
         </div>
-        <ul class="tab-content">
-          <li><span>[icon]--</span>Layer 1</li>
-          <li><span>[icon]--</span>Layer 2</li>
+        <ul id="drawPlane-menu" class="tab-content">
+          <h4 style="text-align: center; border-bottom: 1px dashed black; margin: 0; padding: 0.25rem;">Draw Plane</h4>
+          <Span>L x W</Span>
+          <li id="drawPlane-size">
+            <input type="text" id="drawPlane-length">
+            <Span>x</Span>
+            <input type="text" id="drawPlane-width">
+          </li>
+          <li>
+            <span>Offset:</span>
+            <input type="text" placeholder="0 mm">
+          </li>
+          <span>Rotation:</span>
+          <li>
+            <span>Z</span>
+            <input type="text" placeholder="0">
+            <span>Y</span>
+            <input type="text" placeholder="0">
+            <span>Z</span>
+            <input type="text" placeholder="0">
+          </li>
+          <li id="boolean-options" style="display: flex; align-items: center; justify-content: center; padding: 1rem;">
+            <select style="padding: 1rem; text-align: center;">
+              <option value="merge">Merge</option>
+              <option value="cut">Cut</option>
+              <option value="wrap">Wrap</option>
+          </select>
+          </li>
+          <button id="create-btn" style="padding: 1rem;">Create</button>
         </ul>
       </div>
 
       <div class="tab">
         <div class="tab-header">
           <button class="toggle-tab-btn">
-            <span class="arrow">‹</span>
-            <span class="tab-label">Focus</span>
+            <span class="arrow">
+              <img src="/icons/arrow-opened.svg" alt="arrow">
+            </span>
+            <span class="tab-label">Layers</span>
           </button>
         </div>
         <ul class="tab-content">
-          <li>Active</li>
+          <button>+</button>
         </ul>
       </div>
 
@@ -153,8 +187,7 @@
   
   <div id="about-section" class="modal">
     <div class="modal-content">
-      <button id="close-about-btn" class="close-btn">&times;</button>
-      <div id="about-section-header">
+      <div>
         <a href="https://bractal.com">
           <img
           id="home-icon"
@@ -162,15 +195,24 @@
           alt="White-Butterfly"
           />
         </a>
-        <p>Bractal's CAD - Orthographic CAD concept</p>
+        <button id="close-about-btn" class="close-btn">&times;</button>
+        <h3 id="about-section-header">
+          Rapicad
+        </h3>
+
+        <div style="padding-bottom: 20px;" >
+          <span>by <a href="https://bractal.com">Bractal</a></span>
+        </div>
+
+        <div style="font-size: 10px;">
+          <p><i>Version 0.3 &copy; 2025 Bractal</i></p>
+          <p><i>License: GNU GPL-3.0</i></p>
+        </div>
+
+        <p style="padding-top: 20px;">
+          This is a simple, free & open source CAD program for designing 3D objects.
+        </p>
       </div>
-
-      <p>Version 0.3</p>
-      <p>&copy; 2025 Bractal</p>
-      <p>License: GNU GPL-3.0</p>
-
-      <p>This is a free prototype of a CAD program for designing 3D objects entirely using orthographic Projection.
-      </p>
     </div>
   </div>
 

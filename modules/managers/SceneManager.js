@@ -52,6 +52,7 @@ export default class SceneManager {
     ) {
       // If mouse is clicked, create a new plane in the same orientation
       let drawPlane = createDrawPlane(this.raycast.object, this.app.runtime.size, Drawplane);
+      
       this.app.runtime.drawPlane = drawPlane;
 
       // Remove the star and add the new draw plane to the scene

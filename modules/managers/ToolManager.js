@@ -58,4 +58,8 @@ export default class ToolManager {
   onPointerUp(e) {
     this.activeTool?.onPointerUp?.(e);
   }
+
+  reset(e) {
+    this.activeTool?.reset?.(e);
+  }
 }

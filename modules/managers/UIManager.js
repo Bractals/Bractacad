@@ -134,8 +134,8 @@ export default class UIManager {
         const tab = button.closest('.tab');
         tab.classList.toggle('collapsed');
 
-        const arrow = button.querySelector('.arrow');
-        arrow.textContent = tab.classList.contains('collapsed') ? '›' : '‹';
+        const arrow = button.querySelector('.arrow img');
+        arrow.src = tab.classList.contains('collapsed') ? '../../icons/arrow-closed.svg' : '../../icons/arrow-opened.svg';
       });
     });
     // toggle axes

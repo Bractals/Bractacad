@@ -20,19 +20,19 @@ export default class LineTool extends Tool {
 
     this.finishSketch = false;
 
-    this.activePlane = app.runtime.raycast.plane;
+    this.activeDrawPlane = app.runtime.raycast.plane;
   }
 
   onPointerMove() {
     if (
       !this.enabled ||
       !this.isDrawing ||
-      !this.activePlane ||
+      !this.activeDrawPlane ||
       !this.tempLine ||
       !this.raycast.point
     ) return;
 
-    let localPoint = this.activePlane.worldToLocal(this.raycast.point.clone());
+    let localPoint = this.activeDrawPlane.worldToLocal(this.raycast.point.clone());
     localPoint = this.snapToGrid(localPoint);
 
     // Update the last point to follow mouse
@@ -47,7 +47,7 @@ export default class LineTool extends Tool {
     if (!this.enabled || !this.raycast.object) {
       // if clicked out of plane to cancel preview,
       // still finish what lines were drawn.
-      if (this.activePlane) {
+      if (this.activeDrawPlane) {
         this.finalise(this.finishSketch);
       }
       this.reset();
@@ -65,7 +65,7 @@ export default class LineTool extends Tool {
 
     const clickedPlane = intersected;
 
-    if (clickedPlane !== this.activePlane && this.isDrawing) {
+    if (clickedPlane !== this.activeDrawPlane && this.isDrawing) {
       // If we clicked a different plane, finalise the current line
       this.finishSketch = true;
       this.finalise(this.finishSketch);
@@ -80,14 +80,14 @@ export default class LineTool extends Tool {
     if (!this.isDrawing) {
       // Start new polyline
       this.isDrawing = true;
-      this.activePlane = clickedPlane;
+      this.activeDrawPlane = clickedPlane;
       this.points = [localPoint];
 
       const geometry = new THREE.BufferGeometry().setFromPoints([localPoint, localPoint.clone()]);
       this.tempLine = new THREE.Line(geometry, this.lineMaterial);
-      this.activePlane.add(this.tempLine);
+      this.activeDrawPlane.add(this.tempLine);
 
-    } else if (clickedPlane === this.activePlane) {
+    } else if (clickedPlane === this.activeDrawPlane) {
       // Add another segment
       this.points.push(localPoint);
 
@@ -111,7 +111,7 @@ export default class LineTool extends Tool {
   }
 
   addLine() {
-    this.build.addSketch(finalLine, this.activePlane, this.finishSketch);
+    this.build.addSketch(finalLine, this.activeDrawPlane, this.finishSketch);
   }
 
   // Call this manually to end drawing and store the final line
@@ -119,7 +119,7 @@ export default class LineTool extends Tool {
     if (this.tempLine && this.points.length > 1) {
       const finalGeometry = new THREE.BufferGeometry().setFromPoints(this.points);
       const finalLine = new THREE.Line(finalGeometry, this.lineMaterial.clone());
-      this.build.addSketch(finalLine, this.activePlane, this.finishSketch);
+      this.build.addSketch(finalLine, this.activeDrawPlane, this.finishSketch);
     }
   }
 
@@ -127,13 +127,13 @@ export default class LineTool extends Tool {
     this.isDrawing = false;
     this.points = [];                                                   
 
-    if (this.tempLine && this.activePlane) {
-      this.activePlane.remove(this.tempLine);
+    if (this.tempLine && this.activeDrawPlane) {
+      this.activeDrawPlane.remove(this.tempLine);
       this.tempLine.geometry.dispose();
     }
 
     this.tempLine = null;
-    this.activePlane = null;
+    this.activeDrawPlane = null;
   }
 
   get currentGridSpacing() {

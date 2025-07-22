@@ -10,7 +10,9 @@ export default class Tool {
     this.isDrawing = false;
     this.clicks = 0;
     this.activePlane = null;
-    this.localStart = null;
+
+    this.start = null;
+    this.end = null;
   }
 
   enable() {

@@ -59,26 +59,29 @@ export default class InputManager {
     
     // If left-click (button 0) and not in pan mode, handle tool interaction
     if (e.button === 0) {
-      if (this.leftPointerDown) return; // Prevent repeat
+      if (this.leftPointerDown) {
+        this.isDragging = true;
+      }
       this.leftPointerDown = true;      // Set flag
 
       if (this.spaceDown) {
         this.app.managers.controls.enablePan(true);
         this.hasPanned = true;
         return;
-      } else {
+      }
+      
+      if (this.app.runtime.raycast.localPoint) {
         this.app.runtime.raycast.clicked = true;
         this.app.managers.tools.onPointerDown(e);
-        return;
       }
+
     }
   }
 
   onPointerMove(e) {
-
+    this.app.managers.tools.onPointerMove(e);
     if (this.leftPointerDown) {
       this.isDragging = true;
-      this.app.managers.tools.onPointerMove(e);
     }
   }
 
@@ -127,8 +130,8 @@ export default class InputManager {
   onKeyDown(e) {
   // Move into onKeyShortcut in tool manager
     if (e.code === 'Escape') {
-      this.app.managers.tools.finalise(true);
-      this.app.managers.tools.reset();
+    console.log("input: esc resetting")
+      this.app.managers.tools.reset(e);
       return;
     }
 

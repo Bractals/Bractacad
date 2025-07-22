@@ -89,6 +89,15 @@ export class Axes extends THREE.Group {
     this.add(this.axisGroup, this.labelGroup);
 
     this.name = 'axes';
+
+    // Set all children of group to be ignored by raycast
+    this.traverse(obj => {
+      obj.userData.type = 'ignore';
+    });
+
+    this.labelGroup.userData.type = 'ignore';
+    this.axisGroup.userData.type = 'ignore';
+    this.userData.type = 'ignore';
   }
 
 
