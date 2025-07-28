@@ -25,16 +25,45 @@ export default class UIManager {
     // Tool carousel
     this.carousel = document.querySelector('.tool-carousel');
 
-    // About section
-    this.aboutBtn = document.querySelector('#menu button.about');
-    this.aboutModal = document.getElementById('about-section');
-    this.closeAboutBtn = document.getElementById('close-about-btn');
+
+
+    // Draw Plane
+    this.drawPlane_length = document.getElementById('drawPlane-length');
+
+    this.toggleTabBtn = document.querySelectorAll('.toggle-tab-btn');
+
+    // All tab sections in inspector
+    this.inspectorTabs = Array.from(document.querySelectorAll('.tab'));
+
+    // Inspector tab arrows
+    this.arrow_open = '../../icons/arrow-open.svg';
+    this.arrow_closed = '../../icons/arrow-closed.svg';
+
+
+
+    // Layers from storage or empty
+    this.layerNames = [];
+    // Layers container
+    this.layers_parent = document.getElementById('layers');
+    // New layer button
+    this.newLayerBtn = document.getElementById('new-layer-btn');
+    // Delete layer button
+    this.deleteLayerBtn = document.getElementById('delete-layer-btn');
+    // 
+
+
 
     // tool buttons
     this.lineBtn = document.getElementById('line-btn');
     this.rectBtn = document.getElementById('rectangle-btn');
 
-    // buttons
+    // About section
+    this.aboutBtn = document.querySelector('#menu button.about');
+    this.aboutModal = document.getElementById('about-section');
+    this.closeAboutBtn = document.getElementById('close-about-btn');
+
+    // View section buttons
+    this.toggleFullscreen;
     this.fullscreenBtn = document.getElementById('fullscreen-btn');
     this.centerBtn = document.getElementById('center-btn');
 
@@ -109,9 +138,6 @@ export default class UIManager {
       }
     });
 
-
-
-
     // Inspector toggle
     this.toggleInspectorBtn.addEventListener('click', () => {
       this.inspectorOpen = !this.inspectorOpen;
@@ -129,13 +155,23 @@ export default class UIManager {
       }
     });
     // Tab toggle for each section in inspector
-    document.querySelectorAll('.toggle-tab-btn').forEach(button => {
+    this.toggleTabBtn.forEach(button => {
       button.addEventListener('click', () => {
         const tab = button.closest('.tab');
+        const tabId = tab.id;
+
         tab.classList.toggle('collapsed');
 
         const arrow = button.querySelector('.arrow img');
-        arrow.src = tab.classList.contains('collapsed') ? '../../icons/arrow-closed.svg' : '../../icons/arrow-opened.svg';
+
+        if (tab.classList.contains('collapsed')) {
+          arrow.src = this.arrow_closed;
+          localStorage.setItem(`${tabId}Collapsed`, 'true');
+        } else {
+          arrow.src = this.arrow_open;
+          localStorage.setItem(`${tabId}Collapsed`, 'false');
+        }
+
       });
     });
     // toggle axes
@@ -145,9 +181,6 @@ export default class UIManager {
         axes.visible = this.toggleAxes.checked;
       }
     });
-
-
-
 
     // Tool carousel
     this.carousel.addEventListener('wheel', (e) => {
@@ -165,6 +198,57 @@ export default class UIManager {
       this.app.managers.tools.setTool('rectangle');
       this.updateToolUI();
     });
+
+    // Draw Plane Menu
+    this.drawPlane_length.addEventListener('input', (e) => {
+      let length = e.target.value;
+      //console.log(length);
+    });
+
+    // Layers
+    // Create new layer
+    this.newLayerBtn.addEventListener('click', (e) => {
+      this.newLayer();
+    });
+    // Delete layer
+    this.deleteLayerBtn.addEventListener('click', (e) => {
+      const selected = document.querySelector('.layer.selected');
+      if (!selected) return;
+      const name = selected.id;
+      selected.remove();
+      this.layerNames = this.layerNames.filter(n => n !== name);
+      localStorage.setItem('layerNames', JSON.stringify(this.layerNames));
+
+    });
+    // Drag and drop layers
+
+    this.layers_parent.addEventListener('dragstart', e => {
+      const li = e.target.closest('li.layer');
+      if (!li) return;
+      li.classList.add('dragging');
+      e.dataTransfer.setData('text/plain', li.id);
+    });
+
+    this.layers_parent.addEventListener('dragend', e => {
+      const li = e.target.closest('li.layer');
+      if (!li) return;
+      li.classList.remove('dragging');
+    });
+
+    this.layers_parent.addEventListener('dragover', e => {
+      e.preventDefault();
+      const dragging = this.layers_parent.querySelector('.layer.dragging');
+      if (!dragging) return;
+
+      const after = getDragAfterElement(this.layers_parent, e.clientY);
+      if (after === null) {
+        this.layers_parent.appendChild(dragging);
+      } else {
+        this.layers_parent.insertBefore(dragging, after);
+      }
+    });
+
+
 
 
 
@@ -187,9 +271,6 @@ export default class UIManager {
       this.app.managers.camera.setTarget(new THREE.Vector3(0, 0, 0));
     });
 
-
-
-
     // About section
     this.aboutBtn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -206,29 +287,57 @@ export default class UIManager {
       }
     });
 
-
-
-
     // this.saveBtn.addEventListener('click', () => {
     //   this.app.managers.file.save();
     // });
 
-
-
-    // Restore menu state from localStorage
+    // Restore menu state
     if (localStorage.getItem('menuCollapsed') === 'true') {
       this.menu.classList.add('collapsed');
       this.toggleMenuBtn.classList.add('collapsed');
       this.toggleMenuBtn.innerHTML = '&#x25B6;'; // ▶
       this.menuOpen = false;
     }
-    // Restore inspector state from localStorage
+    // Restore inspector state
     if (localStorage.getItem('inspectorCollapsed') === 'true') {
       this.inspector.classList.add('collapsed');
       this.toggleInspectorBtn.classList.add('collapsed');
       this.toggleInspectorBtn.innerHTML = '&#x25B6;'; // ▶
       this.inspectorOpen = false;
     }
+    // Restore inspector tab states
+    this.inspectorTabs.forEach(tab => {
+      let tabId = tab.id;
+      let button = tab.querySelector('.toggle-tab-btn');
+      let arrow = button.querySelector('.arrow img');
+
+      if (localStorage.getItem(`${tabId}Collapsed`) === 'true') {
+        tab.classList.add('collapsed');
+        arrow.src = this.arrow_closed;
+      } else {
+        arrow.src = this.arrow_open;
+      }
+    });
+
+    // Restore layers
+    //localStorage.removeItem('layerNames');
+    this.layerNames = JSON.parse(localStorage.getItem('layerNames')) || [];
+
+    if (this.layerNames.length > 0) {
+      for (let name of this.layerNames) {
+        this.newLayer(name);
+        console.log(name);
+      }
+      console.log('restored layers');
+    } else {
+      localStorage.removeItem('layerNames');
+      this.newLayer();
+      console.log('default layer added');
+    }
+
+
+
+
     // unhides root document element once UI state is restored
     // Removing this blocks DOM content from loading
     document.documentElement.classList.remove('preload-state');
@@ -239,7 +348,131 @@ export default class UIManager {
     this.rectBtn.classList.toggle('active', this.app.managers.tools.activeTool === this.app.managers.tools.tools.rectangle);
   }
 
+  newLayer(name) {
+    const li = document.createElement('li');
+    li.className = 'layer';
+    
+    // create unique layer name
+    li.id = name ? name : this.uniqueLayerName('new-layer');
 
+    li.draggable = true;
+
+    let pointerDownOnLayer = false;
+
+    li.addEventListener('pointerdown', e => {
+      if (e.button === 0) pointerDownOnLayer = true;
+    });
+
+    li.addEventListener('pointerup', e => {
+      if (!pointerDownOnLayer || e.button !== 0) return;
+      pointerDownOnLayer = false;
+      const isSelected = li.classList.contains('selected');
+      document.querySelectorAll('.layer.selected').forEach(el => el.classList.remove('selected'));
+      if (!isSelected) li.classList.add('selected');
+    });
+
+    li.addEventListener('pointerleave', () => {
+      pointerDownOnLayer = false;
+    });
+
+    li.addEventListener('dragstart', e => {
+      li.classList.add('dragging');
+      e.dataTransfer.setData('text/plain', li.id);
+    });
+    li.addEventListener('dragend', e => {
+      li.classList.remove('dragging');
+    });
+
+    li.ondrop = e => {
+      e.preventDefault();
+      const id = e.dataTransfer.getData('text/plain');
+      const draggedEl = document.getElementById(id);
+      if (draggedEl && draggedEl !== li) {
+        li.parentNode.insertBefore(draggedEl, li);
+      }
+    };
+
+    const eye = document.createElement('button');
+    eye.className = 'eye';
+    eye.classList.add('open');
+    eye.draggable = false;
+    eye.addEventListener('pointerdown', e => {
+      e.stopPropagation();
+      e.preventDefault();
+    });
+
+    const img = document.createElement('img');
+    img.src = '/icons/eye-open.svg';
+    img.alt = 'eye-open';
+
+    eye.appendChild(img);
+
+    // Toggle visibility
+    eye.addEventListener('click', () => {
+      const eye = li.querySelector('.eye');
+      const img = eye.querySelector('img');
+      eye.classList.toggle('open');
+      const isOpen = eye.classList.contains('open');
+      img.src = isOpen ? '/icons/eye-open.svg' : '/icons/eye-closed.svg';
+      img.alt = isOpen ? 'eye-open' : 'eye-closed';
+    });
+
+    const span = document.createElement('span');
+    span.className = 'layer-name';
+    span.textContent = li.id;
+
+    const content = document.createElement('div');
+    content.className = 'layer-content';
+
+    content.appendChild(eye);
+    content.appendChild(span); // span is .layer-name
+    
+    li.appendChild(content);
+
+    this.addLayer(li);
+
+    return li;
+  }
+
+  // Called in newLayer()
+  uniqueLayerName(name) {
+    let base = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-_]/g, '');
+    let newName = base;
+    let id = 1;
+
+    const existing = new Set(this.layerNames);
+
+    while (existing.has(newName)) {
+      newName = `${base}-${id}`;
+      id++;
+    }
+    return newName;
+  }
+
+  // after calling newLayer()
+  addLayer(layer) {
+    this.layers_parent.appendChild(layer);
+
+    if (!this.layerNames.includes(layer.id)) {
+      this.layerNames.push(layer.id);
+    }
+
+    // Overwrite layer names to add the new one
+    localStorage.setItem('layerNames', JSON.stringify(this.layerNames));
+  }
 
   
+}
+
+function getDragAfterElement(container, y) {
+  const draggableElements = [...container.querySelectorAll('.layer:not(.dragging)')];
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) {
+      return { offset: offset, element: child };
+    } else {
+      return closest;
+    }
+  }, { offset: Number.NEGATIVE_INFINITY, element: null }).element;
 }

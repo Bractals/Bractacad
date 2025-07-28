@@ -59,7 +59,6 @@ function init () {
 
   app.runtime.raycast = raycast;
   app.runtime.size = size;
-  app.runtime.star = new Star(size);
 
   // canvas background
   app.runtime.scene.background = background;
@@ -97,8 +96,10 @@ function init () {
   // Ready settings
   //setupSettings();
 
-  // Add star
-  app.runtime.scene.add(app.runtime.star);
+
+  // First layer and star
+  let star = new Star(size);
+  app.managers.scene.addObject("layer 1", star);
 
   // add axes
   app.runtime.scene.add(axes);
@@ -128,7 +129,10 @@ function animate () {
 
   // Set up scene logic
   //addSceneLogic(app, Drawplane);
-  app.managers.scene.starLogic(Drawplane);
+  //app.managers.scene.activeObjectLogic(Drawplane);
+
+  // active object logic
+
 
   // Update label scale
   axes.scaleLabels(app.runtime.camera);

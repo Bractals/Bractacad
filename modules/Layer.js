@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export default class Layer {
   constructor(name) {
     this.name = name;
@@ -6,20 +8,14 @@ export default class Layer {
     this.group.name = name;
   }
 
-  add(id, obj) {
-    this.objects.set(id, obj);
+  add(obj) {
+    this.objects.set(obj);
     this.group.add(obj);
   }
 
-  remove(id) {
-    const obj = this.objects.get(id);
-    if (!obj) return;
+  remove(obj) {
     this.group.remove(obj);
-    this.objects.delete(id);
-  }
-
-  get(id) {
-    return this.objects.get(id);
+    this.objects.delete(obj);
   }
 
   setVisible(visible) {

@@ -19,12 +19,15 @@ html, body {
   height: 100dvh !important;
   z-index: 0;
 }
-ul li {
+ul li:not(:last-child) {
   list-style: none;
   margin: 0;
   padding: 0;
   background-color: white;
   border-bottom: 1px dashed rgb(210, 210, 210);
+}
+button {
+  border: none;
 }
 /* Hide DOM on refresh until state is restored */
 .preload-state {
@@ -33,7 +36,7 @@ ul li {
 .toggle-sidebar-btn {
   position: absolute;
   display: flex;
-  bottom: 20%;
+  bottom: 2%;
   width: 40px;
   height: 40px;
 
@@ -55,14 +58,11 @@ ul li {
 .toggle-sidebar-btn:hover {
   background-color: rgb(210, 210, 210);
 }
-#toggle-menu-btn.collapsed {
-  transform: translateX(-6rem);
-}
 #menu {
   position: fixed;
   top: 0;
   left: 0;
-  width: 6rem;
+  width: 60px;
   height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -70,11 +70,15 @@ ul li {
   border-right: 1px solid black;
   background-color: white;
   pointer-events: auto;
+  overflow: hidden;
   padding: 0;
   margin: 0;
 }
 #toggle-menu-btn {
-  left: 6rem;
+  left: 59px;
+}
+#toggle-menu-btn.collapsed {
+  transform: translateX(-59px);
 }
 #menu.collapsed {
   width: 0;
@@ -108,6 +112,7 @@ ul li {
   border: none;
   cursor: pointer;
   align-items: center;
+  justify-content: center;
   margin: 0;
 }
 #menu li button:hover {
@@ -210,13 +215,15 @@ ul li {
   align-items: stretch;
   top: 0;
   right: 0;
-  max-width: 18rem;
+  width: 150px;
   height: 100dvh;
   z-index: 1000;
   overflow-y: auto;
+  overflow-x: hidden;
+  white-space: nowrap;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none;  /* Internet Explorer/Edge Legacy */
-  background-color: white;
+  background-color: rgb(175, 175, 175);
   border-left: 1px solid black;
 }
 #inspector::-webkit-scrollbar {
@@ -231,10 +238,10 @@ ul li {
   pointer-events: none;
 }
 #toggle-inspector-btn {
-  right: 14rem;
+  right: 149px;
 }
 #toggle-inspector-btn.collapsed {
-  transform: translateX(14rem);
+  transform: translateX(150px);
 }
 #inspector ul {
   opacity: 1;
@@ -282,12 +289,17 @@ ul li {
   cursor: pointer;
   background-color: transparent;
 }
+.tab {
+  flex-shrink: 1;
+  min-width: 0;
+}
 .tab-content {
   list-style: none;
   border: none;
   margin: 0;
   padding: 0;
   cursor: default;
+  border-bottom: 1px solid black;
 }
 .tab-content li {
   display: flex;
@@ -298,20 +310,17 @@ ul li {
   height: 100%;
   align-items: center;
 }
-.tab-content li > label{
+.tab-content li > label {
   flex: 1;
   border: none;
 }
-.tab-content button {
+.tab-content button, select, select option {
   padding: 0;
   width: 100%;
   height: 100%;
-}
-label {
+  text-align: center;
+  text-align-last: center;
   cursor: pointer;
-  padding: 8px 4px;
-  user-select: none; /* Prevent text selection */
-  border-bottom: 1px dashed rgb(210, 210, 210);
 }
 input[type="checkbox"] {
   width: 15px;
@@ -322,6 +331,8 @@ input[type="checkbox"] {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
 }
+
+
 
 
 .scroll-wrapper {
@@ -335,7 +346,6 @@ input[type="checkbox"] {
   display: flex;
   overflow-x: scroll;
   overflow-y: hidden;
-  scrollbar-width: auto;
   gap: 12px;
   padding: 10px;
   border: 1px solid #ccc;
@@ -362,28 +372,113 @@ input[type="checkbox"] {
   border: 3px solid #000;
 }
 
+
+
 #drawPlane-menu li {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 4px;
+  padding: 0.25rem;
   flex-wrap: nowrap;
   overflow-x: hidden;
-  border-bottom: 1px dashed black;
 }
-
 #drawPlane-menu span, input {
   white-space: nowrap;
   flex-shrink: 0;
   text-align: center;
 }
-
 #drawPlane-menu li input {
   flex: 1;
   width: 1.5rem;
   height: 3rem;
 }
+#drawPlane-menu #create-btn-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  background-color: white;
+}
+#create-btn {
+  padding: 0;
+  height: 5rem;
+  border-radius: 4px;
+  border: 1px solid rgb(75, 75, 75);
+}
 
+
+
+
+
+#layers-tab li {
+  border: none;
+  padding: 0;
+}
+#layer-menu-wrap {
+  width: 100%;
+  height: 4rem;
+  padding: 0.5rem;
+  background-color: rgb(150, 150, 150);
+}
+#layer-menu {
+  display: flex;
+  width: 100%;
+  height: 3rem;
+  gap: 1rem;
+  text-align: center;
+}
+#layer-menu button {
+  flex-shrink: 1;
+  min-width: 0;
+  height: 100%;
+  border-radius: 0;
+  font-size: 24px;
+  border: 2px solid rgb(175, 175, 175);
+}
+#layers-tab #layers {
+  background-color: rgb(230, 230, 230);
+}
+#layers li {
+  background-color: white;
+  border: 1px solid rgb(70, 70, 70);
+}
+#layers > li:not(:last-child) {
+  margin-bottom: 4px;
+}
+.layer {
+  position: relative;
+}
+.layer-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: white;
+  cursor: grab;
+}
+.layer.selected .layer-content {
+  background-color: #bdbdbd;
+}
+.eye {
+  position: relative;
+  flex: 0 0 34px;
+  max-width: 34px;
+  border-right: 1px solid black;
+  z-index: 3;
+  pointer-events: auto;
+}
+.eye img {
+  width: 24px;
+  height: 24px;
+  display: block;
+  margin: auto;
+}
+.layer-name {
+  flex: 1;
+  text-align: center;
+  padding-left: 8px;
+  white-space: nowrap;
+}
 
 
 

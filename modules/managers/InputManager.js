@@ -130,8 +130,14 @@ export default class InputManager {
   onKeyDown(e) {
   // Move into onKeyShortcut in tool manager
     if (e.code === 'Escape') {
-    console.log("input: esc resetting")
       this.app.managers.tools.reset(e);
+
+      const el = this.app.managers.ui.fullscreenTarget; // assign actual element
+      if (el && el.requestFullscreen) {
+        el.requestFullscreen().catch(err => {
+          console.error("Fullscreen request denied", err);
+        });
+      }
       return;
     }
 

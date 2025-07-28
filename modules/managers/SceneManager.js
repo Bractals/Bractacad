@@ -7,41 +7,52 @@ export default class SceneManager {
     this.layerManager = new LayerManager(this.scene);
 
     this.raycast = app.runtime.raycast;
-    this.star = app.runtime.star;
+
   }
 
-  addObject(layerName, id, obj) {
+  addObject(layerName, obj) {
     this.layerManager.addLayer(layerName);
-    this.layerManager.addObjectToLayer(layerName, id, obj);
+    this.layerManager.addObjectToLayer(layerName, obj);
   }
 
-  getObject(layerName, id) {
+  removeObject(layerName, obj) {
     const layer = this.layerManager.getLayer(layerName);
-    return layer?.get(id);
+    if (layer) layer.remove(obj);
   }
 
-  removeObject(layerName, id) {
-    const layer = this.layerManager.getLayer(layerName);
-    if (layer) {
-      layer.delete(id);
-    }
-  }
-
-  updateActiveObjectCenter() {
+  updateActiveObjectCenter(mesh) {
     // draw a box around the active object then get its center
     const box = new THREE.Box3().setFromObject(mesh);
-    const center = new THREE.Vector3();
-    box.getCenter(center);
+    
+    // double check this code
+    const center = new THREE.Vector3(box.getCenter());
     // Use camera.position.set(...) relative to center for framing.
     this.app.runtime.camera.lookAt(center);
   }
 
-  starLogic(Drawplane) {
+  activeObjectLogic(Drawplane, obj){
+
+    if(obj.userData.type === 'axisPlane') {
+      starLogic(Drawplane, obj);
+    }
+
+
+
+  
+  }
+
+
+
+
+
+}
+
+  function starLogic(Drawplane, star) {
     // Highlight the plane
-    for (const plane of this.star.planes) {
+    for (const plane of star.planes) {
       let key = plane.name;
       const highlight = plane === this.raycast.object && plane.userData.type === 'axisPlane';
-      plane.material.color.set(highlight ? this.star.colours[key] : 0x808080);
+      plane.material.color.set(highlight ? star.colours[key] : 0x808080);
     }
 
     // Star plane hover/click logic
@@ -56,19 +67,13 @@ export default class SceneManager {
       this.app.runtime.drawPlane = drawPlane;
 
       // Remove the star and add the new draw plane to the scene
-      this.app.runtime.scene.remove(this.star);
+      this.app.runtime.scene.remove(star);
       this.app.runtime.scene.add(drawPlane);
       
       // Reset clicked state
       this.raycast.clicked = false;
     }
   }
-
-
-
-
-
-}
 
 function createDrawPlane(object, size, Drawplane) {
   const drawPlane = new Drawplane(size);

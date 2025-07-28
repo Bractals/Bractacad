@@ -25,10 +25,10 @@ export default class LayerManager {
     this.layers.delete(name);
   }
 
-  addObjectToLayer(name, id, obj) {
+  addObjectToLayer(name, obj) {
     const layer = this.layers.get(name);
     if (!layer) throw new Error(`Layer ${name} not found`);
-    layer.add(id, obj);
+    layer.add(obj);
   }
 
   setAllLayersVisible(visible) {
