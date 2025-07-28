@@ -73,7 +73,6 @@ function init () {
     this.managers.input = new InputManager(this);
     this.managers.tools = new ToolManager(this);
     this.managers.scene = new SceneManager(this);
-    this.managers.layers = new LayerManager(this);
     this.managers.file = new FileManager(this);
     this.managers.ui = new UIManager(this);
   };
@@ -99,7 +98,8 @@ function init () {
 
   // First layer and star
   let star = new Star(size);
-  app.managers.scene.addObject("layer 1", star);
+  //app.managers.scene.addObject("layer 1", star);
+
 
   // add axes
   app.runtime.scene.add(axes);

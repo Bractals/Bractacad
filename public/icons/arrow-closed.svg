@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="tab-closed">
+  <g fill-rule="evenodd">
+    <g>
+      <g>
+        <g>
+          <g>
+            <path fill="white" d="M11.999 9L6 14.241 6.657 15 11.999 10.334 17.343 15 18 14.241z"
+              transform="rotate(90 12 12) matrix(1 0 0 -1 0 24)">
+            </path>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

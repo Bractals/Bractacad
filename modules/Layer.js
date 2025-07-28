@@ -20,5 +20,6 @@ export default class Layer {
 
   setVisible(visible) {
     this.group.visible = visible;
+    console.log(this.name + visible);
   }
 }

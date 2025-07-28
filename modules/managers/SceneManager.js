@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import LayerManager from './LayerManager.js';
 
 export default class SceneManager {

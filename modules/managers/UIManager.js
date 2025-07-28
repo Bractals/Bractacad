@@ -208,7 +208,8 @@ export default class UIManager {
     // Layers
     // Create new layer
     this.newLayerBtn.addEventListener('click', (e) => {
-      this.newLayer();
+      let newLayer = this.newLayer();
+      this.app.managers.scene.layerManager.addLayer(newLayer.id);
     });
     // Delete layer
     this.deleteLayerBtn.addEventListener('click', (e) => {
@@ -216,25 +217,26 @@ export default class UIManager {
       if (!selected) return;
       const name = selected.id;
       selected.remove();
+
+      // Remove layer from scene
+      this.app.managers.scene.layerManager.removeLayer(name);
+
       this.layerNames = this.layerNames.filter(n => n !== name);
       localStorage.setItem('layerNames', JSON.stringify(this.layerNames));
 
     });
     // Drag and drop layers
-
     this.layers_parent.addEventListener('dragstart', e => {
       const li = e.target.closest('li.layer');
       if (!li) return;
       li.classList.add('dragging');
       e.dataTransfer.setData('text/plain', li.id);
     });
-
     this.layers_parent.addEventListener('dragend', e => {
       const li = e.target.closest('li.layer');
       if (!li) return;
       li.classList.remove('dragging');
     });
-
     this.layers_parent.addEventListener('dragover', e => {
       e.preventDefault();
       const dragging = this.layers_parent.querySelector('.layer.dragging');
@@ -319,20 +321,23 @@ export default class UIManager {
       }
     });
 
-    // Restore layers
+    // Emergency clear layers from local storage
     //localStorage.removeItem('layerNames');
+
+    // Restore layers
     this.layerNames = JSON.parse(localStorage.getItem('layerNames')) || [];
 
     if (this.layerNames.length > 0) {
       for (let name of this.layerNames) {
         this.newLayer(name);
-        console.log(name);
+        this.app.managers.scene.layerManager.addLayer(name);
+        //const layer = this.app.managers.scene.layerManager.getLayer(name);
       }
-      console.log('restored layers');
+      console.log('layers restored');
     } else {
       localStorage.removeItem('layerNames');
       this.newLayer();
-      console.log('default layer added');
+      console.log('No layers found: default layer added');
     }
 
 
@@ -403,18 +408,29 @@ export default class UIManager {
 
     const img = document.createElement('img');
     img.src = '/icons/eye-open.svg';
-    img.alt = 'eye-open';
+    img.alt = 'open';
 
     eye.appendChild(img);
 
     // Toggle visibility
     eye.addEventListener('click', () => {
+      // toggle eye img
       const eye = li.querySelector('.eye');
       const img = eye.querySelector('img');
       eye.classList.toggle('open');
       const isOpen = eye.classList.contains('open');
-      img.src = isOpen ? '/icons/eye-open.svg' : '/icons/eye-closed.svg';
-      img.alt = isOpen ? 'eye-open' : 'eye-closed';
+
+      if (isOpen) {
+        img.src = '/icons/eye-open.svg';
+        img.alt = 'show';
+        // toggle layer visible
+        this.app.managers.scene.layerManager.toggleLayerVisible(li.id, true);
+      } else {
+        img.src = '/icons/eye-closed.svg';
+        img.alt = 'hide';
+        // toggle layer hidden
+        this.app.managers.scene.layerManager.toggleLayerVisible(li.id, false);
+      }
     });
 
     const span = document.createElement('span');

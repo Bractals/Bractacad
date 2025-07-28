@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import Layer from '../Layer.js';
 
 export default class LayerManager {
@@ -37,7 +38,7 @@ export default class LayerManager {
     }
   }
 
-  setLayerVisible(name, visible) {
+  toggleLayerVisible(name, visible) {
     const layer = this.layers.get(name);
     if (layer) layer.setVisible(visible);
   }
