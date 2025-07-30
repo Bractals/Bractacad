@@ -11,7 +11,7 @@ import Drawplane from './modules/Drawplane.js';
 import raycast, { castRay } from './modules/raycast.js';
 
 import Star from './modules/Star.js';
-import axes from './modules/Axes.js';
+import Axes from './modules/Axes.js';
 
 //import { runStartupAnimation } from './startupAnimation.js';
 
@@ -27,7 +27,6 @@ import CameraManager from './modules/managers/CameraManager.js';
 import ControlsManager from './modules/managers/ControlsManager.js';
 import FileManager from './modules/managers/FileManager.js';
 import InputManager from './modules/managers/InputManager.js';
-import LayerManager from './modules/managers/LayerManager.js';
 import SceneManager from './modules/managers/SceneManager.js';
 import ToolManager from './modules/managers/ToolManager.js';
 import UIManager from './modules/managers/UIManager.js';
@@ -38,6 +37,8 @@ let background = new THREE.Color(0xffffff);
 
 // Run startup animation, then start main app
 //runStartupAnimation(renderer, main);
+
+let star, axes;
 
 // Default size of starting axis planes, distances from lights
 let size = 100;
@@ -60,6 +61,15 @@ function init () {
   app.runtime.raycast = raycast;
   app.runtime.size = size;
 
+  // add axes
+  axes = new Axes(size);
+  app.runtime.axes = axes;
+  app.runtime.scene.add(axes);
+  // Add star
+  star = new Star(size);
+  app.runtime.star = star;
+  app.runtime.scene.add(star);
+
   // canvas background
   app.runtime.scene.background = background;
 
@@ -72,7 +82,7 @@ function init () {
     this.managers.controls = new ControlsManager(this);
     this.managers.input = new InputManager(this);
     this.managers.tools = new ToolManager(this);
-    this.managers.scene = new SceneManager(this);
+    this.managers.scene = new SceneManager(this, Drawplane);
     this.managers.file = new FileManager(this);
     this.managers.ui = new UIManager(this);
   };
@@ -95,15 +105,6 @@ function init () {
   // Ready settings
   //setupSettings();
 
-
-  // First layer and star
-  let star = new Star(size);
-  //app.managers.scene.addObject("layer 1", star);
-
-
-  // add axes
-  app.runtime.scene.add(axes);
-
   // Add lights for 3d object
   // Ambient light for base visibility
   const ambient = new THREE.AmbientLight(0xffffff, 0.5);
@@ -120,19 +121,11 @@ function init () {
 }
 
 function animate () {
-
   // from raycast.js
   castRay();
 
   app.runtime.controls.update();
   app.runtime.renderer.render(app.runtime.scene, app.runtime.camera);
-
-  // Set up scene logic
-  //addSceneLogic(app, Drawplane);
-  //app.managers.scene.activeObjectLogic(Drawplane);
-
-  // active object logic
-
 
   // Update label scale
   axes.scaleLabels(app.runtime.camera);

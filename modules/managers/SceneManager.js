@@ -2,13 +2,14 @@ import * as THREE from 'three';
 import LayerManager from './LayerManager.js';
 
 export default class SceneManager {
-  constructor(app) {
+  constructor(app, Drawplane) {
     this.app = app;
     this.scene = app.runtime.scene;
-    this.layerManager = new LayerManager(this.scene);
-
     this.raycast = app.runtime.raycast;
+    this.star = app.runtime.star;
+    this.Drawplane = Drawplane;
 
+    this.layerManager = new LayerManager(this.scene);
   }
 
   addObject(layerName, obj) {
@@ -21,6 +22,24 @@ export default class SceneManager {
     if (layer) layer.remove(obj);
   }
 
+  setActiveObject() {
+
+  }
+
+  setActiveLayer(name) {
+    if (!name || name === null) {
+      this.app.runtime.activeLayer = null;
+      console.log("active layer: " + this.app.runtime.activeLayer);
+      return;
+    } else {
+      this.app.runtime.activeLayer = this.layerManager.getLayer(name);
+    }
+  }
+
+  setActiveDrawPlane(drawPlane) {
+    this.app.runtime.drawPlane = drawPlane;
+  }
+
   updateActiveObjectCenter(mesh) {
     // draw a box around the active object then get its center
     const box = new THREE.Box3().setFromObject(mesh);
@@ -31,16 +50,42 @@ export default class SceneManager {
     this.app.runtime.camera.lookAt(center);
   }
 
-  activeObjectLogic(Drawplane, obj){
+  activeObjectLogic(obj){
 
-    if(obj.userData.type === 'axisPlane') {
-      starLogic(Drawplane, obj);
-    }
-
-
-
-  
   }
+
+  starLogic(plane) {
+    const activeLayer = this.app.runtime.activeLayer;
+    // return if not layer selected or there is already a draw plane somewhere
+    if (!activeLayer || this.app.runtime.drawPlane) return;
+
+    let id = plane.name;
+
+    // If already selected, create draw plane from that star plane
+    if (plane.material.color.getHex() === this.star.colours[id]) {
+
+      // Create new draw plane
+      const drawPlane = createDrawPlane(plane, this.app.runtime.size, this.Drawplane);
+      // draw plane to layer
+      this.app.managers.scene.addObject(activeLayer.name, drawPlane);
+      // Add as active draw plane in app state
+      this.setActiveDrawPlane(drawPlane);
+
+      // hide the star and add the new draw plane to the scene
+      this.app.managers.ui.toggleStar.checked = !this.app.managers.ui.toggleStar.checked;
+      this.app.managers.ui.toggleStar.dispatchEvent(new Event('change'));
+
+      for (const plane of this.star.planes) {
+        plane.material.color.set(0x808080);
+      }
+
+      // Reset clicked state
+      this.raycast.clicked = false;
+    } else {
+      plane.material.color.set(plane ? this.star.colours[id] : 0x808080);
+    }
+  }
+
 
 
 
@@ -48,33 +93,6 @@ export default class SceneManager {
 
 }
 
-  function starLogic(Drawplane, star) {
-    // Highlight the plane
-    for (const plane of star.planes) {
-      let key = plane.name;
-      const highlight = plane === this.raycast.object && plane.userData.type === 'axisPlane';
-      plane.material.color.set(highlight ? star.colours[key] : 0x808080);
-    }
-
-    // Star plane hover/click logic
-    if (
-      this.raycast.object &&
-      this.raycast.object.userData.type === 'axisPlane' &&
-      this.raycast.clicked
-    ) {
-      // If mouse is clicked, create a new plane in the same orientation
-      let drawPlane = createDrawPlane(this.raycast.object, this.app.runtime.size, Drawplane);
-      
-      this.app.runtime.drawPlane = drawPlane;
-
-      // Remove the star and add the new draw plane to the scene
-      this.app.runtime.scene.remove(star);
-      this.app.runtime.scene.add(drawPlane);
-      
-      // Reset clicked state
-      this.raycast.clicked = false;
-    }
-  }
 
 function createDrawPlane(object, size, Drawplane) {
   const drawPlane = new Drawplane(size);

@@ -29,7 +29,7 @@ export default class RectangleTool extends Tool {
 
     // First click: start rectangle
     if (!this.isDrawing) {
-      if (!this.raycast.object || !this.raycast.localPoint) return;
+      if (this.raycast.object.userData.type !== 'drawPlane' || !this.raycast.localPoint) return;
       this.isDrawing = true;
       this.activePlane = this.raycast.object;
       this.start = this.raycast.localPoint.clone();

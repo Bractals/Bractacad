@@ -16,43 +16,36 @@ export default class UIManager {
 
     // Inspector
     this.inspector = document.querySelector('#inspector');
-    this.toggleInspectorBtn = document.querySelector('#toggle-inspector-btn');
     this.inspectorOpen = true;
-
-    // Toggles
-    this.toggleAxes = document.getElementById('toggle-axes');
-
-    // Tool carousel
-    this.carousel = document.querySelector('.tool-carousel');
-
-
-
-    // Draw Plane
-    this.drawPlane_length = document.getElementById('drawPlane-length');
-
-    this.toggleTabBtn = document.querySelectorAll('.toggle-tab-btn');
-
+    this.toggleInspectorBtn = document.querySelector('#toggle-inspector-btn');
     // All tab sections in inspector
     this.inspectorTabs = Array.from(document.querySelectorAll('.tab'));
-
     // Inspector tab arrows
     this.arrow_open = '../../icons/arrow-open.svg';
     this.arrow_closed = '../../icons/arrow-closed.svg';
 
+    // Toggle a tab in inspector
+    this.toggleTabBtn = document.querySelectorAll('.toggle-tab-btn');
 
+    // Toggle axes button
+    this.toggleAxes = document.getElementById('toggle-axes');
+    // Toggle star button
+    this.toggleStar = document.getElementById('toggle-star');
+
+    // Draw Plane
+    this.drawPlane_length = document.getElementById('drawPlane-length');
 
     // Layers from storage or empty
     this.layerNames = [];
     // Layers container
-    this.layers_parent = document.getElementById('layers');
+    this.layers_parent = document.getElementById('layers-container');
     // New layer button
     this.newLayerBtn = document.getElementById('new-layer-btn');
     // Delete layer button
     this.deleteLayerBtn = document.getElementById('delete-layer-btn');
-    // 
-
-
-
+    
+    // Tool carousel
+    this.carousel = document.querySelector('.tool-carousel');
     // tool buttons
     this.lineBtn = document.getElementById('line-btn');
     this.rectBtn = document.getElementById('rectangle-btn');
@@ -74,7 +67,7 @@ export default class UIManager {
 
   initUI() {
     // Click to open a top-level menu
-    this.menu.addEventListener('click', (e) => {
+    this.menu.addEventListener('pointerdown', (e) => {
       const button = e.target.closest('.dropdown-toggle');
       if (button) {
         const li = button.closest('li');
@@ -174,13 +167,20 @@ export default class UIManager {
 
       });
     });
-    // toggle axes
+
+    // Toggle axes
     this.toggleAxes.addEventListener('change', () => {
-      const axes = this.app.runtime.scene.getObjectByName('axes');
-      if (axes) {
-        axes.visible = this.toggleAxes.checked;
-      }
+      let showAxes = this.toggleAxes.checked;
+      this.app.runtime.axes.visible = showAxes;
+      localStorage.setItem(`showAxes`, `${showAxes}`);
     });
+    // Toggle star
+    this.toggleStar.addEventListener('change', () => {
+      let showStar = this.toggleStar.checked;
+      this.app.runtime.star.visible = showStar;
+      localStorage.setItem(`showStar`, `${showStar}`);
+    });
+
 
     // Tool carousel
     this.carousel.addEventListener('wheel', (e) => {
@@ -225,6 +225,8 @@ export default class UIManager {
       localStorage.setItem('layerNames', JSON.stringify(this.layerNames));
 
     });
+    // Select layer
+
     // Drag and drop layers
     this.layers_parent.addEventListener('dragstart', e => {
       const li = e.target.closest('li.layer');
@@ -249,10 +251,6 @@ export default class UIManager {
         this.layers_parent.insertBefore(dragging, after);
       }
     });
-
-
-
-
 
 
     // Fullscreen toggle
@@ -320,6 +318,18 @@ export default class UIManager {
         arrow.src = this.arrow_open;
       }
     });
+    // Restore checkbox state for Axes
+    if (localStorage.getItem('showAxes') === 'true') {
+      this.app.runtime.axes.visible = true;
+    } else {
+      this.app.runtime.axes.visible = false;
+    }
+    // Restore checkbox state for Star
+    if (localStorage.getItem('showStar') === 'true') {
+      this.app.runtime.star.visible = true;
+    } else {
+      this.app.runtime.star.visible = false;
+    }
 
     // Emergency clear layers from local storage
     //localStorage.removeItem('layerNames');
@@ -361,25 +371,28 @@ export default class UIManager {
     li.id = name ? name : this.uniqueLayerName('new-layer');
 
     li.draggable = true;
-
     let pointerDownOnLayer = false;
 
     li.addEventListener('pointerdown', e => {
       if (e.button === 0) pointerDownOnLayer = true;
-    });
 
+      this.app.managers.scene.setActiveLayer(li.id);
+    });
     li.addEventListener('pointerup', e => {
       if (!pointerDownOnLayer || e.button !== 0) return;
       pointerDownOnLayer = false;
+      
       const isSelected = li.classList.contains('selected');
-      document.querySelectorAll('.layer.selected').forEach(el => el.classList.remove('selected'));
-      if (!isSelected) li.classList.add('selected');
-    });
 
+      document.querySelectorAll('.layer.selected').forEach(el => el.classList.remove('selected'));
+      
+      if (!isSelected) {
+        li.classList.add('selected');
+      }
+    });
     li.addEventListener('pointerleave', () => {
       pointerDownOnLayer = false;
     });
-
     li.addEventListener('dragstart', e => {
       li.classList.add('dragging');
       e.dataTransfer.setData('text/plain', li.id);
@@ -387,7 +400,6 @@ export default class UIManager {
     li.addEventListener('dragend', e => {
       li.classList.remove('dragging');
     });
-
     li.ondrop = e => {
       e.preventDefault();
       const id = e.dataTransfer.getData('text/plain');
@@ -441,7 +453,7 @@ export default class UIManager {
     content.className = 'layer-content';
 
     content.appendChild(eye);
-    content.appendChild(span); // span is .layer-name
+    content.appendChild(span);
     
     li.appendChild(content);
 
@@ -472,6 +484,8 @@ export default class UIManager {
     if (!this.layerNames.includes(layer.id)) {
       this.layerNames.push(layer.id);
     }
+
+    this.inspector.scrollTop = this.inspector.scrollHeight;
 
     // Overwrite layer names to add the new one
     localStorage.setItem('layerNames', JSON.stringify(this.layerNames));

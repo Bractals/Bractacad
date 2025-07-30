@@ -17,8 +17,7 @@ export default function controls(camera, renderer) {
 
   // Remap touch gestures
   controls.touches = {
-    ONE: -1,
-    TWO: THREE.TOUCH.ROTATE
+    ONE: THREE.TOUCH.ROTATE
   };
 
   return controls;

@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 
-export class Axes extends THREE.Group {
-  constructor() {
+export default class Axes extends THREE.Group {
+  constructor(size) {
     super();
 
-    this.size = 100; // Default size of axes
+    this.size = size; // Default size of axes
     this.labelSize = this.size * 0.02; // Size of axis labels
     this.labelScale = this.labelSize;
     this.Offset = this.size + this.labelSize * 4; // Offset for labels from axis lines
@@ -150,6 +150,3 @@ export class Axes extends THREE.Group {
 
 
 }
-
-const axes = new Axes();
-export default axes;

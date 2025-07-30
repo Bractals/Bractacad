@@ -111,7 +111,7 @@ export default class Star extends THREE.Group {
       this.add(group);
     }
 
-
+    this.name = "star";
   }
 
   createOutline() {

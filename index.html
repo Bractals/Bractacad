@@ -94,10 +94,16 @@
         </div>
 
         <div class="tab-content">
-          <label id="toggle-axes-label">
-            <input type="checkbox" id="toggle-axes" checked>
-            <span>Axes</span>
-          </label>
+          <div id="toggles">
+            <label class="toggle-btn">
+              <input type="checkbox" id="toggle-axes" checked>
+              <span>Axes</span>
+            </label>
+            <label class="toggle-btn">
+              <input type="checkbox" id="toggle-star" checked>
+              <span>Star</span>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -201,7 +207,9 @@
             </div>
           </div>
 
-          <ul id="layers">
+          <ul id="layers-list">
+            <div id="layers-container">
+            </div>
           </ul>
 
         </div>

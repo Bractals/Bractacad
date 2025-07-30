@@ -223,7 +223,7 @@ button {
   white-space: nowrap;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none;  /* Internet Explorer/Edge Legacy */
-  background-color: rgb(175, 175, 175);
+  background-color: rgb(255, 255, 255);
   border-left: 1px solid black;
 }
 #inspector::-webkit-scrollbar {
@@ -310,10 +310,6 @@ button {
   height: 100%;
   align-items: center;
 }
-.tab-content li > label {
-  flex: 1;
-  border: none;
-}
 .tab-content button, select, select option {
   padding: 0;
   width: 100%;
@@ -327,10 +323,25 @@ input[type="checkbox"] {
   height: 15px;
   cursor: pointer;
 }
-.tab-content #plane-toggles {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+
+
+#toggles {
+  display: flex;
+  flex-direction: column;
 }
+#toggles label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 3rem;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+}
+#toggles label:not(:last-child) {
+  border-bottom: 1px dashed rgb(210, 210, 210);
+}
+
 
 
 
@@ -411,10 +422,7 @@ input[type="checkbox"] {
 
 
 
-#layers-tab li {
-  border: none;
-  padding: 0;
-}
+
 #layer-menu-wrap {
   width: 100%;
   height: 4rem;
@@ -436,25 +444,46 @@ input[type="checkbox"] {
   font-size: 24px;
   border: 2px solid rgb(175, 175, 175);
 }
-#layers-tab #layers {
-  background-color: rgb(230, 230, 230);
+#layers-list {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  background: #ececec;
+}
+#layers-list li {
+  padding: 0;
+  margin: 0;
+}
+#layers-container {
+  min-height: 150px;
+  border: none;
 }
 #layers li {
-  background-color: white;
-  border: 1px solid rgb(70, 70, 70);
+  height: 2rem;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-top: 1px solid rgb(70, 70, 70);
+  border-bottom: 1px solid rgb(70, 70, 70);
+}
+#layers li {
+  display: flex;
+  flex-direction: column;
 }
 #layers > li:not(:last-child) {
   margin-bottom: 4px;
-}
-.layer {
-  position: relative;
+  padding: 0;
 }
 .layer-content {
   display: flex;
   align-items: center;
   width: 100%;
+  height: 100%;
   background: white;
   cursor: grab;
+  border-top: 1px solid rgb(70, 70, 70);
+  border-bottom: 1px solid rgb(70, 70, 70);
 }
 .layer.selected .layer-content {
   background-color: #bdbdbd;
