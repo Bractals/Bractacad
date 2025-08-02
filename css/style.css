@@ -5,18 +5,19 @@ html, body {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  width: 100vw;
   margin: 0;
   padding: 0;
   overflow: hidden;
   font-family: monospace;
 }
-#background {
+#canvas {
   position: absolute;
   top: 0;
   left: 0;
   display: block;
-  width: 100dvw !important;
-  height: 100dvh !important;
+  width: 100vw;
+  height: 100vh;
   z-index: 0;
 }
 ul li:not(:last-child) {
@@ -487,6 +488,9 @@ input[type="checkbox"] {
 }
 .layer.selected .layer-content {
   background-color: #bdbdbd;
+}
+.layer.dragging {
+  opacity: 0.4;
 }
 .eye {
   position: relative;

@@ -66,6 +66,7 @@ export default class UIManager {
   }
 
   initUI() {
+
     // Click to open a top-level menu
     this.menu.addEventListener('pointerdown', (e) => {
       const button = e.target.closest('.dropdown-toggle');
@@ -225,30 +226,51 @@ export default class UIManager {
       localStorage.setItem('layerNames', JSON.stringify(this.layerNames));
 
     });
-    // Select layer
+    // Select and drag reorder layers
+    let draggingLayer = null;
+    let startY = 0;
 
-    // Drag and drop layers
-    this.layers_parent.addEventListener('dragstart', e => {
-      const li = e.target.closest('li.layer');
+    this.layers_parent.addEventListener('pointerdown', e => {
+      const li = e.target.closest('.layer');
       if (!li) return;
+      if (e.target.closest('.eye')) return; // don't drag on eye
+
+      // Set as active layer
+      const isSelected = li.classList.contains('selected');
+
+      if (!isSelected) {
+        document.querySelectorAll('.layer.selected').forEach(el => el.classList.remove('selected'));
+        li.classList.add('selected');
+        // Set as active layer in scene
+        this.app.managers.scene.setActiveLayer(li.id);
+      }
+
+      draggingLayer = li;
+      startY = e.clientY;
       li.classList.add('dragging');
-      e.dataTransfer.setData('text/plain', li.id);
+      document.body.style.userSelect = 'none';
     });
-    this.layers_parent.addEventListener('dragend', e => {
-      const li = e.target.closest('li.layer');
-      if (!li) return;
-      li.classList.remove('dragging');
-    });
-    this.layers_parent.addEventListener('dragover', e => {
-      e.preventDefault();
-      const dragging = this.layers_parent.querySelector('.layer.dragging');
-      if (!dragging) return;
 
+    window.addEventListener('pointermove', e => {
+      if (!draggingLayer) return;
+      // Find the element after which to insert
       const after = getDragAfterElement(this.layers_parent, e.clientY);
       if (after === null) {
-        this.layers_parent.appendChild(dragging);
-      } else {
-        this.layers_parent.insertBefore(dragging, after);
+        this.layers_parent.appendChild(draggingLayer);
+      } else if (after !== draggingLayer) {
+        this.layers_parent.insertBefore(draggingLayer, after);
+      }
+    });
+
+    window.addEventListener('pointerup', e => {
+      const li = e.target.closest('.layer');
+
+      if (draggingLayer) {
+        draggingLayer.classList.remove('dragging');
+        draggingLayer = null;
+        document.body.style.userSelect = '';
+
+        // update localStorage layerNames order
       }
     });
 
@@ -318,14 +340,20 @@ export default class UIManager {
         arrow.src = this.arrow_open;
       }
     });
-    // Restore checkbox state for Axes
-    if (localStorage.getItem('showAxes') === 'true') {
+
+    //localStorage.removeItem('showAxes');
+    //localStorage.removeItem('showStar');
+
+    // Set default to show or restore checkbox state for Axes
+    let axesState = localStorage.getItem('showAxes');
+    if (!axesState || axesState === 'true') {
       this.app.runtime.axes.visible = true;
     } else {
       this.app.runtime.axes.visible = false;
     }
-    // Restore checkbox state for Star
-    if (localStorage.getItem('showStar') === 'true') {
+    // Set default to show or restore checkbox state for Star
+    let starState = localStorage.getItem('showStar');
+    if (!starState || starState === 'true') {
       this.app.runtime.star.visible = true;
     } else {
       this.app.runtime.star.visible = false;
@@ -351,8 +379,6 @@ export default class UIManager {
     }
 
 
-
-
     // unhides root document element once UI state is restored
     // Removing this blocks DOM content from loading
     document.documentElement.classList.remove('preload-state');
@@ -366,62 +392,19 @@ export default class UIManager {
   newLayer(name) {
     const li = document.createElement('li');
     li.className = 'layer';
-    
     // create unique layer name
     li.id = name ? name : this.uniqueLayerName('new-layer');
-
     li.draggable = true;
-    let pointerDownOnLayer = false;
 
-    li.addEventListener('pointerdown', e => {
-      if (e.button === 0) pointerDownOnLayer = true;
-
-      this.app.managers.scene.setActiveLayer(li.id);
-    });
-    li.addEventListener('pointerup', e => {
-      if (!pointerDownOnLayer || e.button !== 0) return;
-      pointerDownOnLayer = false;
-      
-      const isSelected = li.classList.contains('selected');
-
-      document.querySelectorAll('.layer.selected').forEach(el => el.classList.remove('selected'));
-      
-      if (!isSelected) {
-        li.classList.add('selected');
-      }
-    });
-    li.addEventListener('pointerleave', () => {
-      pointerDownOnLayer = false;
-    });
-    li.addEventListener('dragstart', e => {
-      li.classList.add('dragging');
-      e.dataTransfer.setData('text/plain', li.id);
-    });
-    li.addEventListener('dragend', e => {
-      li.classList.remove('dragging');
-    });
-    li.ondrop = e => {
-      e.preventDefault();
-      const id = e.dataTransfer.getData('text/plain');
-      const draggedEl = document.getElementById(id);
-      if (draggedEl && draggedEl !== li) {
-        li.parentNode.insertBefore(draggedEl, li);
-      }
-    };
-
+    // Layer visibility indicator element
     const eye = document.createElement('button');
     eye.className = 'eye';
     eye.classList.add('open');
     eye.draggable = false;
-    eye.addEventListener('pointerdown', e => {
-      e.stopPropagation();
-      e.preventDefault();
-    });
-
+    // indicator image
     const img = document.createElement('img');
     img.src = '/icons/eye-open.svg';
     img.alt = 'open';
-
     eye.appendChild(img);
 
     // Toggle visibility
@@ -445,18 +428,17 @@ export default class UIManager {
       }
     });
 
+    // Layer name
     const span = document.createElement('span');
     span.className = 'layer-name';
     span.textContent = li.id;
-
+    // Layer content containing the eye and layer name
     const content = document.createElement('div');
     content.className = 'layer-content';
-
     content.appendChild(eye);
     content.appendChild(span);
     
     li.appendChild(content);
-
     this.addLayer(li);
 
     return li;
@@ -479,6 +461,7 @@ export default class UIManager {
 
   // after calling newLayer()
   addLayer(layer) {
+    // add the new layer to parent html container
     this.layers_parent.appendChild(layer);
 
     if (!this.layerNames.includes(layer.id)) {

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 export default function createRenderer() {
-  const canvas = document.querySelector('#background');
+  const canvas = document.querySelector('#canvas');
 
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -9,7 +9,15 @@ export default function createRenderer() {
   });
 
   renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  function resizeRenderer() {
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    renderer.setSize(width, height, false);
+  }
+
+  window.addEventListener('resize', resizeRenderer);
+  resizeRenderer(); // Initial resize
 
   return renderer;
 }

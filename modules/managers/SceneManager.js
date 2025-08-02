@@ -75,15 +75,20 @@ export default class SceneManager {
       this.app.managers.ui.toggleStar.checked = !this.app.managers.ui.toggleStar.checked;
       this.app.managers.ui.toggleStar.dispatchEvent(new Event('change'));
 
+      // Reset all plane highlighting
       for (const plane of this.star.planes) {
         plane.material.color.set(0x808080);
       }
-
-      // Reset clicked state
-      this.raycast.clicked = false;
     } else {
-      plane.material.color.set(plane ? this.star.colours[id] : 0x808080);
+      // Reset all plane highlighting
+      for (const plane of this.star.planes) {
+        plane.material.color.set(0x808080);
+      }
+      // Highlight selected plane
+      plane.material.color.set(this.star.colours[id]);
     }
+
+
   }
 
 

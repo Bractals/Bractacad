@@ -16,8 +16,6 @@ import Axes from './modules/Axes.js';
 //import { runStartupAnimation } from './startupAnimation.js';
 
 // Utility
-//import { setupSettings } from './modules/settings.js';
-import { addResizeListener} from './modules/resize.js';
 
 // application shared state manager
 import { app } from './modules/app.js';
@@ -80,7 +78,7 @@ function init () {
   app.initManagers = function () {
     this.managers.camera = new CameraManager(this);
     this.managers.controls = new ControlsManager(this);
-    this.managers.input = new InputManager(this);
+    this.managers.input = new InputManager(this, castRay);
     this.managers.tools = new ToolManager(this);
     this.managers.scene = new SceneManager(this, Drawplane);
     this.managers.file = new FileManager(this);
@@ -98,9 +96,6 @@ function init () {
 
   // update camera
   app.managers.camera.refresh();
-
-  // Dynamic resizing of window
-  addResizeListener(app.runtime.camera, frustrumSize, app.runtime.renderer);
 
   // Ready settings
   //setupSettings();
@@ -122,14 +117,25 @@ function init () {
 
 function animate () {
   // from raycast.js
-  castRay();
+  //castRay();
 
   app.runtime.controls.update();
   app.runtime.renderer.render(app.runtime.scene, app.runtime.camera);
 
   // Update label scale
   axes.scaleLabels(app.runtime.camera);
-
+  
   // tells browser to perform animation
   requestAnimationFrame(animate);
 }
+
+function onResize() {
+  const canvas = app.runtime.renderer.domElement;
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+  app.runtime.renderer.setSize(width, height, false);
+  app.runtime.camera.resize(width, height);
+}
+
+window.addEventListener('resize', onResize);
+onResize(); // initial resize call

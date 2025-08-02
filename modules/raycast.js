@@ -2,27 +2,19 @@ import * as THREE from 'three';
 import ray from './ray.js';
 import { app } from './app.js';
 
-// 2D screen point
-const pointer = new THREE.Vector2();
 
 // Keep all state inside raycast.
 let raycast = {
   point: null,
   object: null,
   face: null,
-  clicked: false,
   localPoint: null
 };
 
 let currIntersection = null;
 
-function onPointerMove(e) {
-  pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
-  pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
-}
-document.addEventListener('pointermove', onPointerMove, { passive: true });
+export function castRay(pointer) {
 
-export function castRay() {
   // find intersections
   ray.setFromCamera(pointer, app.runtime.camera);
 
