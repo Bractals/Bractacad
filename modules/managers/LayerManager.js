@@ -2,9 +2,10 @@ import * as THREE from 'three';
 import Layer from '../Layer.js';
 
 export default class LayerManager {
-  constructor(scene) {
-    this.scene = scene;
-    this.layers = new Map();
+  constructor(app) {
+    this.app = app;
+    this.scene = this.app.runtime.scene;
+    this.layers = this.app.runtime.layers;
   }
 
   addLayer(name) {
@@ -16,7 +17,7 @@ export default class LayerManager {
   }
 
   getLayer(name) {
-    return this.layers.get(name);
+    return this.layers.get(name); 
   }
 
   removeLayer(name) {

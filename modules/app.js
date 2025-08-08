@@ -25,6 +25,7 @@ export const app = {
     star: null,
     axes: null,
 
+    layers: new Map(),
     activeLayer: null,
 
     drawPlane: null, // active draw plane
@@ -47,7 +48,7 @@ export const app = {
       tool: { current: 'select', options: {} },
       drawPlane: null,
       selection: [],
-      layers: new Map(),
+      layers: [],
       sceneObjects: new Map(),
       history: { undo: [], redo: [] }
     }

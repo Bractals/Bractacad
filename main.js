@@ -28,6 +28,8 @@ import InputManager from './modules/managers/InputManager.js';
 import SceneManager from './modules/managers/SceneManager.js';
 import ToolManager from './modules/managers/ToolManager.js';
 import UIManager from './modules/managers/UIManager.js';
+import StateManager from './modules/managers/StateManager.js';
+
 
 
 // White background
@@ -78,11 +80,12 @@ function init () {
   app.initManagers = function () {
     this.managers.camera = new CameraManager(this);
     this.managers.controls = new ControlsManager(this);
+    this.managers.scene = new SceneManager(this, Drawplane);
+    this.managers.ui = new UIManager(this);
     this.managers.input = new InputManager(this, castRay);
     this.managers.tools = new ToolManager(this);
-    this.managers.scene = new SceneManager(this, Drawplane);
     this.managers.file = new FileManager(this);
-    this.managers.ui = new UIManager(this);
+    this.managers.state = new StateManager(this);
   };
 
   // Initialise app state and managers.

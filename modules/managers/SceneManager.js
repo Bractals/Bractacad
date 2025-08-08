@@ -9,7 +9,7 @@ export default class SceneManager {
     this.star = app.runtime.star;
     this.Drawplane = Drawplane;
 
-    this.layerManager = new LayerManager(this.scene);
+    this.layerManager = new LayerManager(this.app);
   }
 
   addObject(layerName, obj) {
@@ -29,7 +29,6 @@ export default class SceneManager {
   setActiveLayer(name) {
     if (!name || name === null) {
       this.app.runtime.activeLayer = null;
-      console.log("active layer: " + this.app.runtime.activeLayer);
       return;
     } else {
       this.app.runtime.activeLayer = this.layerManager.getLayer(name);

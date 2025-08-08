@@ -6,6 +6,8 @@ export default class UIManager {
   constructor(app) {
     this.app = app;
 
+    this.layerManager = this.app.managers.scene.layerManager;
+
     this.dropdownActive = false;     // is a dropdown currently open
     this.canHoverSwitch = false;     // is hover-switching allowed
     
@@ -18,8 +20,6 @@ export default class UIManager {
     this.inspector = document.querySelector('#inspector');
     this.inspectorOpen = true;
     this.toggleInspectorBtn = document.querySelector('#toggle-inspector-btn');
-    // All tab sections in inspector
-    this.inspectorTabs = Array.from(document.querySelectorAll('.tab'));
     // Inspector tab arrows
     this.arrow_open = '../../icons/arrow-open.svg';
     this.arrow_closed = '../../icons/arrow-closed.svg';
@@ -36,7 +36,7 @@ export default class UIManager {
     this.drawPlane_length = document.getElementById('drawPlane-length');
 
     // Layers from storage or empty
-    this.layerNames = [];
+    this.layers = this.app.runtime.layers;
     // Layers container
     this.layers_parent = document.getElementById('layers-container');
     // New layer button
@@ -207,10 +207,14 @@ export default class UIManager {
     });
 
     // Layers
+
     // Create new layer
     this.newLayerBtn.addEventListener('click', (e) => {
-      let newLayer = this.newLayer();
-      this.app.managers.scene.layerManager.addLayer(newLayer.id);
+      // Overwrite layer names to add the new one
+      //localStorage.setItem('layers', JSON.stringify(this.layers));
+
+      this.app.managers.state.addLayer();
+
     });
     // Delete layer
     this.deleteLayerBtn.addEventListener('click', (e) => {
@@ -219,11 +223,7 @@ export default class UIManager {
       const name = selected.id;
       selected.remove();
 
-      // Remove layer from scene
-      this.app.managers.scene.layerManager.removeLayer(name);
-
-      this.layerNames = this.layerNames.filter(n => n !== name);
-      localStorage.setItem('layerNames', JSON.stringify(this.layerNames));
+      this.app.managers.state.removeLayer(selected.id);
 
     });
     // Select and drag reorder layers
@@ -270,7 +270,7 @@ export default class UIManager {
         draggingLayer = null;
         document.body.style.userSelect = '';
 
-        // update localStorage layerNames order
+        // update localStorage layers order
       }
     });
 
@@ -309,79 +309,7 @@ export default class UIManager {
       }
     });
 
-    // this.saveBtn.addEventListener('click', () => {
-    //   this.app.managers.file.save();
-    // });
 
-    // Restore menu state
-    if (localStorage.getItem('menuCollapsed') === 'true') {
-      this.menu.classList.add('collapsed');
-      this.toggleMenuBtn.classList.add('collapsed');
-      this.toggleMenuBtn.innerHTML = '&#x25B6;'; // ▶
-      this.menuOpen = false;
-    }
-    // Restore inspector state
-    if (localStorage.getItem('inspectorCollapsed') === 'true') {
-      this.inspector.classList.add('collapsed');
-      this.toggleInspectorBtn.classList.add('collapsed');
-      this.toggleInspectorBtn.innerHTML = '&#x25B6;'; // ▶
-      this.inspectorOpen = false;
-    }
-    // Restore inspector tab states
-    this.inspectorTabs.forEach(tab => {
-      let tabId = tab.id;
-      let button = tab.querySelector('.toggle-tab-btn');
-      let arrow = button.querySelector('.arrow img');
-
-      if (localStorage.getItem(`${tabId}Collapsed`) === 'true') {
-        tab.classList.add('collapsed');
-        arrow.src = this.arrow_closed;
-      } else {
-        arrow.src = this.arrow_open;
-      }
-    });
-
-    //localStorage.removeItem('showAxes');
-    //localStorage.removeItem('showStar');
-
-    // Set default to show or restore checkbox state for Axes
-    let axesState = localStorage.getItem('showAxes');
-    if (!axesState || axesState === 'true') {
-      this.app.runtime.axes.visible = true;
-    } else {
-      this.app.runtime.axes.visible = false;
-    }
-    // Set default to show or restore checkbox state for Star
-    let starState = localStorage.getItem('showStar');
-    if (!starState || starState === 'true') {
-      this.app.runtime.star.visible = true;
-    } else {
-      this.app.runtime.star.visible = false;
-    }
-
-    // Emergency clear layers from local storage
-    //localStorage.removeItem('layerNames');
-
-    // Restore layers
-    this.layerNames = JSON.parse(localStorage.getItem('layerNames')) || [];
-
-    if (this.layerNames.length > 0) {
-      for (let name of this.layerNames) {
-        this.newLayer(name);
-        this.app.managers.scene.layerManager.addLayer(name);
-        //const layer = this.app.managers.scene.layerManager.getLayer(name);
-      }
-      console.log('layers restored');
-    } else {
-      localStorage.removeItem('layerNames');
-      this.newLayer();
-      console.log('No layers found: default layer added');
-    }
-
-
-    // unhides root document element once UI state is restored
-    // Removing this blocks DOM content from loading
-    document.documentElement.classList.remove('preload-state');
   }
 
   updateToolUI() {
@@ -439,9 +367,11 @@ export default class UIManager {
     content.appendChild(span);
     
     li.appendChild(content);
-    this.addLayer(li);
 
-    return li;
+    // add the new layer to parent html container
+    this.layers_parent.appendChild(li);
+
+    return li.id;
   }
 
   // Called in newLayer()
@@ -450,28 +380,11 @@ export default class UIManager {
     let newName = base;
     let id = 1;
 
-    const existing = new Set(this.layerNames);
-
-    while (existing.has(newName)) {
+    while (this.layers.has(newName)) {
       newName = `${base}-${id}`;
       id++;
     }
     return newName;
-  }
-
-  // after calling newLayer()
-  addLayer(layer) {
-    // add the new layer to parent html container
-    this.layers_parent.appendChild(layer);
-
-    if (!this.layerNames.includes(layer.id)) {
-      this.layerNames.push(layer.id);
-    }
-
-    this.inspector.scrollTop = this.inspector.scrollHeight;
-
-    // Overwrite layer names to add the new one
-    localStorage.setItem('layerNames', JSON.stringify(this.layerNames));
   }
 
   
