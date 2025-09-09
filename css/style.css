@@ -207,6 +207,39 @@ button {
 
 
 
+#state-menu {
+  position: fixed;
+  display: flex;
+  justify-content: space-between;
+  top: 0;
+  left: calc(50% - 200px);
+  width: 400px;
+  height: 4rem;
+  gap: 4rem;
+  background-color: transparent;
+}
+.state-btn {
+  width: 40px;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid black;
+}
+.state-btn:hover {
+  background-color: rgb(200, 200, 200);
+}
+.state-btn img {
+  display: block;
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+
+
+
 
 #inspector {
   position: fixed;
@@ -385,38 +418,86 @@ input[type="checkbox"] {
 }
 
 
+#drawPlane-menu {
+  margin: 0;
+  background: #ececec;
 
-#drawPlane-menu li {
+}
+#drawPlane-menu-label {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 4px;
-  padding: 0.25rem;
-  flex-wrap: nowrap;
+  justify-content: center;
+  text-align: center;
+  margin: 0;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  border: none;
+  background-color: rgb(150, 150, 150);
+}
+.drawPlane-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+#drawPlane-menu div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
   overflow-x: hidden;
+}
+#drawPlane-menu div > div {
+  flex: 1 0 100%;
+
+}
+#drawPlane-menu div div {
+  border: none !important;
+}
+#drawPlane-menu div:not(:last-child) {
+  border-bottom: 1px dashed grey;
 }
 #drawPlane-menu span, input {
   white-space: nowrap;
   flex-shrink: 0;
   text-align: center;
+
 }
-#drawPlane-menu li input {
-  flex: 1;
-  width: 1.5rem;
-  height: 3rem;
+#drawPlane-menu input {
+  flex: 1 1;
+  min-width: 1rem;
+  height: 30px;
+}
+#drawPlane-menu #boolean-options select {
+  background-color: rgb(215, 215, 215);
+  border: 1px solid rgb(100, 100, 100);
+  border-radius: 4px;
+}
+#drawPlane-menu #boolean-options select:hover {
+  background-color: rgb(250, 250, 250);
+  border: 1px solid rgb(100, 100, 100);
+  border-radius: 4px;
 }
 #drawPlane-menu #create-btn-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem 2rem;
-  background-color: white;
 }
 #create-btn {
   padding: 0;
   height: 5rem;
   border-radius: 4px;
   border: 1px solid rgb(75, 75, 75);
+  background-color: rgb(215, 215, 215);
+}
+#create-btn:hover {
+  background-color: rgb(250, 250, 250);
+
 }
 
 

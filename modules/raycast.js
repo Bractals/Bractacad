@@ -40,7 +40,6 @@ export function castRay(pointer) {
     currIntersection = validIntersection;
 
     raycast.localPoint = raycast.object.parent.worldToLocal(validIntersection.point.clone());
-
   } else {
     raycast.point = null;
     raycast.object = null;

@@ -77,6 +77,11 @@
       <li><button class="dropdown-toggle"><u>D</u>onate</button></li>
     </ul>
   </div>
+
+  <div id="state-menu" class="menu">
+    <button id="undo-btn" class="state-btn"><img src="/icons/undo.svg" alt="undo" draggable="false"></button>
+    <button id="redo-btn" class="state-btn"><img src="/icons/redo.svg" alt="redo" draggable="false"></button>
+  </div>
   
   <button id="toggle-inspector-btn" class="toggle-sidebar-btn">&#x25B6;</button>
   <div id="inspector" class="menu">
@@ -144,7 +149,7 @@
 
         <div id="drawPlane-menu" class="tab-content">
           
-          <h4 style="text-align: center; border-bottom: 1px dashed black; margin: 0; padding: 0.25rem;">Draw Plane</h4>
+          <div id="drawPlane-menu-label">Draw Plane</div>
           
           <div id="drawPlane-size">
             <input type="text" id="drawPlane-length" placeholder="0 mm">
@@ -153,12 +158,12 @@
           </div>
 
           <div>
-            <span>Offset:</span>
+            <div class="drawPlane-label">Offset</div>
             <input type="text" placeholder="0 mm">
           </div>
 
           <div>
-            <span>Rotation:</span>
+            <div class="drawPlane-label">Rotation</div>
             <span>X</span>
             <input type="text" placeholder="0">
             <span>Y</span>
@@ -168,7 +173,7 @@
           </div>
 
           <div>
-            <span>Extrude:</span>
+            <div class="drawPlane-label">Depth</div>
             <input type="text" id="extrude-value" placeholder="+/- 0 mm">
           </div>
 

@@ -96,13 +96,15 @@ export default class InputManager {
 
       if (object && object.userData.type === 'axisPlane'){
         this.app.managers.scene.starLogic(object);
-        console.log(object.name);
+        //console.log(object.name);
       } else {
-        console.log("object not found");
+        //console.log("object not found");
       }
       
       if (this.app.runtime.raycast.object) {
         this.app.managers.tools.onPointerDown(e);
+      } else {
+        this.app.managers.tools.reset(e);
       }
 
     }
@@ -144,7 +146,7 @@ export default class InputManager {
   onKeyDown(e) {
   // Move into onKeyShortcut in tool manager
     if (e.code === 'Escape') {
-      this.tools.reset(e);
+      this.app.managers.tools.reset(e);
 
       const el = this.app.managers.ui.fullscreenTarget; // assign actual element
       if (el && el.requestFullscreen) {

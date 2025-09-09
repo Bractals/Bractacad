@@ -3,17 +3,13 @@ import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUti
 
 import { app } from './app.js';
 
-export class Build extends THREE.Group {
-  constructor(planes, planeSize) {
-    super();
-    // planes from cube
-    this.planes = planes;
-    // Size of the build box for projecting the 3D objects
-    this.size = planeSize;
+// Temporary class to build 3d object from a draw plane.
+export default class Build extends THREE.Group {
+  constructor(app) {
+    this.app = app;
 
-    this.sketches = { lines: [] };
-    this.object = { faces: [] };
-    this.objects = [];
+
+    this.object = null;
 
 
     this.init();
@@ -31,7 +27,7 @@ export class Build extends THREE.Group {
     this.extrude(sketch);
   }
 
-    // sketch object storing the plane the line array is on, uuid, and array of line objects
+  // sketch object storing the plane the line array is on, uuid, and array of line objects
   addSketch(sketch, plane) {
     plane.add(sketch);
     // project sketch to 3D and add to scene
@@ -195,5 +191,3 @@ export class Build extends THREE.Group {
   }
 
 }
-
-export default Build;

@@ -31,6 +31,7 @@ export default class Tool {
   }
 
   // Child classes must override these
+  onPointerDown() {}
   onPointerMove() {}
   draw() {}
   reset() {}
